@@ -223,7 +223,7 @@ button{font:inherit;color:inherit}
 .tile.s2 .strip{left:0;right:0;top:0;height:23%}
 .tile.s1 .strip{top:0;bottom:0;left:0;width:23%;writing-mode:vertical-rl;transform:rotate(180deg)}
 .tile.s3 .strip{top:0;bottom:0;right:0;width:23%;writing-mode:vertical-rl}
-.tile .art{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;padding:7%}
+.tile .art{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;padding:4%}
 .tile.s0 .art{inset:0 0 23% 0}
 .tile.s2 .art{inset:23% 0 0 0}
 .tile.s1 .art{inset:0 0 0 23%}
@@ -265,6 +265,10 @@ button{font:inherit;color:inherit}
 .tile .wm{flex:0 0 auto}
 .tile.nm2 .wm{font-size:calc(var(--cell)*.13)}
 .tile.nm3 .wm{font-size:calc(var(--cell)*.113)}
+/* боковые колонки уже на ширину полосы с ценой — там шрифт мельче */
+.tile.s1.nm2 .wm,.tile.s3.nm2 .wm{font-size:calc(var(--cell)*.115)}
+.tile.s1.nm3 .wm,.tile.s3.nm3 .wm{font-size:calc(var(--cell)*.10)}
+.tile.s1.longnm .wm,.tile.s3.longnm .wm{font-size:calc(var(--cell)*.135)}
 .tile.longnm .mk{display:none}
 .tile.longnm .wm{-webkit-line-clamp:3;font-size:calc(var(--cell)*.155)}
 .board.compact .tile.nm1 .wm{font-size:calc(var(--cell)*.145)}
