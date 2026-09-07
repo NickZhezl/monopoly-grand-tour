@@ -1947,6 +1947,12 @@ function openTrade(){
   renderTrade();
 }
 function closeTrade(){ st.trade = null; renderTrade(); render(); }
+function cancelTrade(){
+  if(!st.trade) return;
+  logIt(nm(P(st.trade.from)) + " отзывает предложение.");
+  st.trade = null;
+  render(); renderTrade(); save();
+}
 
 function tradeSummary(t){
   var A = P(t.from), B = P(t.to);
@@ -1979,8 +1985,9 @@ function sendTrade(){
     if(v.ok) applyTrade(t); else logIt(nm(B) + " отказывается от сделки (" + v.why + ").");
     render(); renderTrade(); save();
   } else {
-    t.phase = "offer";  // передайте устройство партнёру
+    t.phase = "offer";
     renderTrade();
+    save();            // партнёр увидит предложение у себя
   }
 }
 function acceptTrade(){
@@ -2438,12 +2445,22 @@ function renderTrade(){
   }
 
   var offering = (t.phase === "offer");
+  var iAmTarget = !st.online || isMineSeat(t.to);
+  if(offering && !iAmTarget){
+    box.innerHTML =
+      '<div class="tr-h"><h3>Ждём ответа ' + escape_(B.name) + '</h3></div>' +
+      '<div class="tr-b"><div class="tr-sum">' + tradeSummary(t) + '</div></div>' +
+      '<div class="tr-foot"><button class="btn danger" id="trCancel2">Отозвать</button></div>';
+    box.querySelector("#trCancel2").onclick = cancelTrade;
+    return;
+  }
   var head = offering
     ? '<h3>' + escape_(B.name) + ', вам предложение</h3>'
     : '<h3>Сделка с ' + escape_(B.name) + '</h3>';
 
   var html = '<div class="tr-h">' + head + '<span class="lbl">' +
-    (offering ? "передайте устройство" : "выберите, что отдаёте и что просите") + '</span></div><div class="tr-b">';
+    (offering ? (st.online ? "решение за вами" : "передайте устройство")
+              : "выберите, что отдаёте и что просите") + '</span></div><div class="tr-b">';
 
   if(!offering){
     html += '<div class="tr-who" id="trWho"></div>';
@@ -3372,12 +3389,15 @@ function renderOnline(){
   net.seats.forEach(function(s, i){
     var row = document.createElement("div");
     row.className = "seatrow";
-    var on = s.bot || peerOnline(s.owner);
+    var mineSeat = (s.owner === me.id);
+    var live = !!net.room;              // присутствие известно только там, где есть канал
+    var on = s.bot || mineSeat || peerOnline(s.owner);
+    var tag = s.bot ? ' <span class="tag">— бот</span>'
+            : (live ? (on ? ' <span class="tag">— на связи</span>' : ' <span class="tag">— не в сети</span>') : "");
     row.innerHTML =
       '<div class="tk" style="background:' + PCOL[i % PCOL.length] + '">' + PTOK[i % PTOK.length] + '</div>' +
       '<div>' + escape_(s.name || "Игрок") +
-        (s.owner === me.id ? ' <span class="tag">— вы</span>' : "") +
-        (s.bot ? ' <span class="tag">— бот</span>' : (on ? ' <span class="tag">— на связи</span>' : ' <span class="tag">— не в сети</span>')) +
+        (mineSeat ? ' <span class="tag">— вы</span>' : "") + tag +
       '</div>';
     if(net.isHost && s.owner !== me.id){
       var x = document.createElement("button");
