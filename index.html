@@ -201,7 +201,7 @@ button{font:inherit;color:inherit}
 }
 .board{
   position:relative;aspect-ratio:1;display:grid;gap:2px;background:var(--tbl);
-  width:clamp(min(94vw, 560px), min(94vw, calc(100vh - 130px)), min(94vw, 1120px));
+  width:clamp(min(94vw, 560px), min(96vw, calc(100vh - 92px)), min(96vw, 1400px));
 }
 #dock{display:none}
 #barHome:empty{display:none}
@@ -283,17 +283,38 @@ button{font:inherit;color:inherit}
 /* ---- felt (внутри поля) ---- */
 .felt{
   background:var(--tbl);position:relative;overflow:hidden;
-  display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;
-  gap:2%;padding:2.4%;
+  display:grid;
+  grid-template-columns:clamp(160px,23%,300px) minmax(0,1fr) clamp(160px,23%,320px);
+  grid-template-rows:minmax(0,1fr) auto;
+  gap:1.8%;padding:2.2%;
 }
-.fseats{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:6px;min-width:0;overflow-y:auto;overflow-x:hidden}
+.fseats{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;overflow:hidden}
 .fmid{grid-column:2;grid-row:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3%;min-width:0}
 .fchat{grid-column:1/-1;grid-row:2;min-width:0}
-.fseats{width:clamp(180px,27%,300px)}
+.fside{grid-column:3;grid-row:1;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+
+.felt #pLog{border:0;background:transparent;display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
+.felt #pLog .panel-b{padding:6px;min-height:0;flex:1;display:flex}
+.felt .log{max-height:none;flex:1;overflow-y:auto}
+/* левая колонка: игроки сверху, активы добирают остаток */
+.felt #pPlayers{flex:0 0 auto;max-height:52%;overflow:hidden;display:flex;flex-direction:column}
+.felt #pPlayers .panel-b{overflow-y:auto;min-height:0}
+.felt #pAssets{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border:0;background:transparent}
+.felt #pAssets .panel-b{padding:6px;flex:1;min-height:0;display:flex}
+.felt .assets{max-height:none;flex:1;overflow-y:auto}
+.felt .arow .an em{color:var(--tink2)}
+.felt .btn.tiny{background:rgba(255,255,255,.09);border-color:var(--tline);color:var(--tink)}
+.felt #detail{flex:0 0 auto;max-height:46%;overflow-y:auto;border:0;background:var(--tbl2)}
+.felt .detail td{border-color:var(--tline);color:var(--tink2)}
+.felt .detail td+td{color:var(--tink)}
+.felt .detail .dnm{color:var(--tink)}
+#below:empty{display:none}
+.felt .log div{border-color:var(--tline);color:var(--tink2)}
+.felt .log b{color:var(--tink)}
 .finfo{display:flex;flex-direction:column;align-items:center;gap:calc(var(--cell)*.12)}
 .felt.solo{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
 .felt.solo .fmid{grid-column:1;grid-row:1}
-.felt.solo .fseats,.felt.solo .fchat{display:none}
+.felt.solo .fseats,.felt.solo .fchat,.felt.solo .fside{display:none}
 .felt .panel{background:var(--tbl2);border-color:var(--tline);color:var(--tink);box-shadow:none}
 .felt .panel-h{border-color:var(--tline)}
 .felt .lbl{color:var(--tink2)}
@@ -305,19 +326,22 @@ button{font:inherit;color:inherit}
 .felt .pcard .tk{grid-area:tk;align-self:start}
 .felt .pcard .pinfo{grid-area:info;min-width:0}
 .felt .pcard .money{grid-area:money;text-align:left;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
-.felt .pcard .money small{display:inline;font-size:10.5px}
+.felt .pcard .money{font-size:13px}
+.felt .pcard .money small{display:inline;font-size:11px}
+.felt .pcard .nm{font-size:13px}
+.felt .pcard .meta{font-size:11px}
 .felt #pPlayers{border:0;background:transparent}
 .felt #pPlayers .panel-h{display:none}
 .felt #pPlayers .panel-b{padding:6px}
 .felt .pcard.turn{background:rgba(79,192,141,.16);border-color:var(--acc-2);box-shadow:inset 3px 0 0 var(--acc-2)}
 .felt .pcard .meta{color:var(--tink2)}
 .felt .pcard .money small{color:var(--tink2)}
-.felt .actions{background:var(--tbl2);border-color:var(--tline);color:var(--tink);justify-content:center}
+.felt .actions{background:var(--tbl2);border-color:var(--tline);color:var(--tink);justify-content:center;font-size:15px;padding:14px 18px}
 .felt .actions .hint{color:var(--tink2);text-align:center;flex:0 1 auto;min-width:0}
 .felt .actions .hint b{color:var(--tink)}
 .felt .btn{background:rgba(255,255,255,.07);border-color:var(--tline);color:var(--tink)}
 .felt .btn:hover:not(:disabled){background:rgba(255,255,255,.14);border-color:var(--acc-2)}
-.felt .btn.pri{background:#2FA877;border-color:#2FA877;color:#04140D;font-weight:700}
+.felt .btn.pri{background:#2FA877;border-color:#2FA877;color:#04140D;font-weight:700;padding:12px 22px;font-size:15.5px}
 .felt .btn.pri:hover:not(:disabled){background:#3EC08A;border-color:#3EC08A}
 .felt .btn.danger{border-color:#E0685A;color:#E0685A;background:transparent}
 .felt .chat{max-height:none;height:100%}
@@ -339,7 +363,7 @@ button{font:inherit;color:inherit}
 
 .dice{display:flex;gap:calc(var(--cell)*.16);justify-content:center}
 .die{
-  width:min(calc(var(--cell)*1.15), 104px);height:min(calc(var(--cell)*1.15), 104px);min-width:40px;min-height:40px;
+  width:min(calc(var(--cell)*1.45), 132px);height:min(calc(var(--cell)*1.45), 132px);min-width:44px;min-height:44px;
   background:#fff;border:0;border-radius:16%;
   display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:11%;gap:4%;
   box-shadow:0 8px 18px -8px rgba(0,0,0,.8);
@@ -893,8 +917,7 @@ function tileArt(sp){
   }
   var a = artFor(sp);
   if(!a) return "";
-  var wm = (sp.type === "chance" || sp.type === "chest")
-    ? "" : '<span class="wm">' + escape_(sp.name) + '</span>';
+  var wm = '<span class="wm">' + escape_(sp.name) + '</span>';
   return '<span class="mk" style="color:' + a.c + '">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">' + a.m + '</g></svg></span>' + wm;
 }
@@ -1282,7 +1305,8 @@ var STRIP_BG = {
 };
 function parkNodes(){
   if(!el.dock) return;
-  [el.actions, el.chatPanel, el.pPlayers].forEach(function(n){ if(n) el.dock.appendChild(n); });
+  [el.actions, el.chatPanel, el.pPlayers, el.pLog, el.pAssets, el.detail]
+    .forEach(function(n){ if(n) el.dock.appendChild(n); });
 }
 function mountBoard(){
   var L = st.board.meta.L, S = L+2;
@@ -1330,6 +1354,7 @@ function mountBoard(){
   feltEl.style.gridArea = "2/2/" + (2+L) + "/" + (2+L);
   feltEl.innerHTML = '<div class="fseats" id="fseats"></div>' +
                      '<div class="fmid" id="fmid"><div class="finfo" id="finfo"></div></div>' +
+                     '<div class="fside" id="fside"></div>' +
                      '<div class="fchat" id="fchat"></div>';
   boardEl.appendChild(feltEl);
 
@@ -1365,17 +1390,21 @@ function layoutPanels(force){
   wideNow = wide;
   var seats = boardEl.querySelector("#fseats"),
       mid   = boardEl.querySelector("#fmid"),
+      fside = boardEl.querySelector("#fside"),
       fchat = boardEl.querySelector("#fchat");
-  if(wide && seats && mid && fchat){
+  if(wide && seats && mid && fchat && fside){
     seats.appendChild(el.pPlayers);
+    seats.appendChild(el.pAssets);
     mid.appendChild(el.actions);
+    fside.appendChild(el.pLog);
+    fside.appendChild(el.detail);
     fchat.appendChild(el.chatPanel);
   } else {
     el.barHome.appendChild(el.actions);
     el.below.appendChild(el.pPlayers);
     el.below.appendChild(el.chatPanel);
+    [el.pAssets, el.detail, el.pLog].forEach(function(n){ if(n) el.below.appendChild(n); });
   }
-  [el.pAssets, el.detail, el.pLog].forEach(function(n){ if(n) el.below.appendChild(n); });
   if(feltEl) feltEl.classList.toggle("solo", !wide);
 }
 function isCorner(sp){ return sp.type==="go"||sp.type==="jail"||sp.type==="parking"||sp.type==="gotojail"; }
@@ -2278,7 +2307,7 @@ function renderPlayers(){
       '<div class="pinfo"><div class="nm">' + escape_(p.name) + '</div>' +
       '<div class="meta"><span>' + props + ' участк.</span>' + (tags.length ? "<span>" + tags.join(" · ") + "</span>" : "") + '</div></div>' +
       '<div class="money">' + money(p.cash) +
-        (worth(p) !== p.cash ? '<small>капитал ' + money(worth(p)) + '</small>' : "") + '</div>';
+        (worth(p) !== p.cash ? '<small title="весь капитал">≈ ' + Math.round(worth(p)).toLocaleString("ru-RU") + '</small>' : "") + '</div>';
     host.appendChild(d);
   });
 }
