@@ -2595,7 +2595,9 @@ function snapshot(){
       return {id:p.id,name:p.name,bot:p.bot,owner:p.owner||null,cash:p.cash,pos:p.pos,jail:p.jail,
               jailTurns:p.jailTurns,outCards:p.outCards,alive:p.alive};
     }),
-    deeds:st.board.map(function(s){ return [s.owner, s.houses||0, s.mortgaged?1:0]; }),
+    deeds:st.board.map(function(s){
+      return (s.owner == null ? "-" : s.owner) + ":" + (s.houses || 0) + ":" + (s.mortgaged ? 1 : 0);
+    }).join("|"),
     turn:st.turn, dice:st.dice, doubles:st.doubles, mustRoll:st.mustRoll,
     pending:st.pending, debt:st.debt, over:st.over, log:st.log.slice(0,40),
     chance:st.chance, chest:st.chest, msg:st.msg,
@@ -2616,8 +2618,15 @@ function hasSave(){
 function hydrate(snap){
   if(!snap || !snap.players || !snap.players.length) return false;
   var board = buildBoard(snap.n, snap.modes || {}, packById(snap.pack || packId));
-  if(!snap.deeds || snap.deeds.length !== board.length) return false;
-  snap.deeds.forEach(function(d, i){
+  var deeds = snap.deeds;
+  if(typeof deeds === "string"){
+    deeds = deeds.split("|").map(function(chunk){
+      var q = chunk.split(":");
+      return [q[0] === "-" ? null : +q[0], +q[1] || 0, +q[2] ? 1 : 0];
+    });
+  }
+  if(!deeds || deeds.length !== board.length) return false;
+  deeds.forEach(function(d, i){
     board[i].owner = d[0]; board[i].houses = d[1]; board[i].mortgaged = !!d[2];
   });
   st = {
@@ -3144,9 +3153,12 @@ function netPush(){
   if(!net.on || !net.db || !net.code || !st) return;
   net.version = (net.version || 0) + 1;
   try{
+    var clean = JSON.parse(JSON.stringify(snapshot()));   // выкидывает undefined
     roomRef(net.code).update({
-      state:snapshot(), version:net.version, phase:(st.over ? "over" : "game"), at:Date.now()
-    }).catch(function(){});
+      state:clean, version:net.version, phase:(st.over ? "over" : "game"), at:Date.now()
+    }).catch(function(e){
+      flash("Ход не записался в базу — проверьте правила доступа");
+    });
   }catch(e){}
 }
 function applyRemote(sn){
