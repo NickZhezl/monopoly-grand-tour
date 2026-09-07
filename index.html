@@ -1,0 +1,3411 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Монополия Гранд-Тур</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Golos+Text:wght@400;500;600;700&family=PT+Sans+Narrow:wght@400;700&family=PT+Mono&display=swap">
+
+<style>
+/* ============ tokens ============ */
+:root{
+  --paper:#E7EBE3;
+  --paper-2:#D9E0D5;
+  --card:#FBFCF8;
+  --tile:#F6F8F2;
+  --ink:#141F1A;
+  --ink-2:#4F6157;
+  --ink-3:#7C8C82;
+  --line:#C3CEC0;
+  --line-2:#A6B4A3;
+  --acc:#17654A;
+  --acc-2:#0F4C37;
+  --acc-ink:#F4FAF5;
+  --acc-soft:#D7E6DB;
+  --gold:#96721F;
+  --gold-soft:#EFE4C4;
+  --red:#A6392C;
+  --red-soft:#F0DAD5;
+  --shadow:0 1px 0 rgba(20,31,26,.05), 0 18px 40px -24px rgba(20,31,26,.55);
+  --shadow-s:0 1px 2px rgba(20,31,26,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1411;
+    --paper-2:#111A16;
+    --card:#16201C;
+    --tile:#182320;
+    --ink:#E6ECE4;
+    --ink-2:#9DAEA4;
+    --ink-3:#77887E;
+    --line:#2A3A33;
+    --line-2:#3A4E45;
+    --acc:#4FC08D;
+    --acc-2:#7FD6AC;
+    --acc-ink:#08110D;
+    --acc-soft:#1B2E25;
+    --gold:#D3A757;
+    --gold-soft:#2C2717;
+    --red:#E5766A;
+    --red-soft:#331D1A;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 20px 44px -26px #000;
+    --shadow-s:0 1px 2px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1411;
+  --paper-2:#111A16;
+  --card:#16201C;
+  --tile:#182320;
+  --ink:#E6ECE4;
+  --ink-2:#9DAEA4;
+  --ink-3:#77887E;
+  --line:#2A3A33;
+  --line-2:#3A4E45;
+  --acc:#4FC08D;
+  --acc-2:#7FD6AC;
+  --acc-ink:#08110D;
+  --acc-soft:#1B2E25;
+  --gold:#D3A757;
+  --gold-soft:#2C2717;
+  --red:#E5766A;
+  --red-soft:#331D1A;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 20px 44px -26px #000;
+  --shadow-s:0 1px 2px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Golos Text","Segoe UI",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:400}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.mono{font-family:"PT Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.dspl{font-family:"Prata","Times New Roman",serif}
+.lbl{
+  font-family:"Golos Text",sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+}
+
+/* ============ shell ============ */
+.wrap{max-width:1240px;margin:0 auto;padding:22px 18px 60px}
+.masthead{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  padding-bottom:12px;margin-bottom:20px;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.seal{
+  width:44px;height:44px;flex:none;border-radius:50%;
+  border:1.5px solid var(--acc);color:var(--acc);
+  display:grid;place-items:center;font-size:19px;
+  background:
+    repeating-conic-gradient(from 0deg, var(--acc-soft) 0deg 6deg, transparent 6deg 12deg);
+}
+.brand h1{font-family:"Prata",serif;font-size:clamp(21px,3.4vw,29px);line-height:1.05;letter-spacing:.005em}
+.brand .sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.mast-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+/* ============ buttons ============ */
+.btn{
+  appearance:none;border:1px solid var(--line-2);background:var(--card);
+  padding:9px 15px;border-radius:3px;cursor:pointer;font-weight:500;font-size:14px;
+  display:inline-flex;align-items:center;gap:8px;transition:background .15s,border-color .15s,transform .08s;
+}
+.btn:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc-2);font-weight:600}
+.btn.pri:hover:not(:disabled){background:var(--acc-2);border-color:var(--acc-2)}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover:not(:disabled){background:var(--red-soft)}
+.btn.big{padding:12px 20px;font-size:15.5px}
+.btn.tiny{padding:3px 8px;font-size:12px;border-radius:2px}
+.btn .amt{font-family:"PT Mono",monospace;font-variant-numeric:tabular-nums}
+
+/* ============ setup ============ */
+.setup{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:34px;align-items:start}
+.setup-lead{max-width:56ch}
+.setup-lead .kicker{color:var(--acc);font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-size:11px}
+.setup-lead h2{font-family:"Prata",serif;font-size:clamp(26px,4.4vw,42px);line-height:1.12;margin:10px 0 12px}
+.setup-lead p{color:var(--ink-2);margin:0 0 18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:5px;box-shadow:var(--shadow-s)}
+.panel-h{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.panel-b{padding:14px}
+
+.count-row{display:flex;gap:6px;flex-wrap:wrap}
+.count-row .cbtn{
+  width:44px;height:44px;border:1px solid var(--line-2);background:var(--card);border-radius:3px;
+  cursor:pointer;font-family:"Prata",serif;font-size:18px;transition:.15s;
+}
+.count-row .cbtn:hover{border-color:var(--acc)}
+.count-row .cbtn[aria-pressed="true"]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc-2)}
+
+.growth{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.stat{min-width:78px}
+.stat b{display:block;font-family:"Prata",serif;font-size:24px;line-height:1.1;color:var(--acc)}
+.stat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+.mini{display:grid;gap:1px;background:var(--line);border:1px solid var(--line-2);width:100%;aspect-ratio:1;border-radius:3px;overflow:hidden}
+.mini i{background:var(--tile);display:grid;place-items:center;font-size:8px;font-style:normal;color:var(--acc-ink)}
+.mini i.c{background:var(--ink-3)}
+.mini i.s{background:var(--paper-2)}
+.mini i.mid{background:var(--card)}
+.mini i.md{background:var(--acc)}
+
+.modes{display:flex;flex-direction:column;gap:7px}
+.moderow{
+  display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;text-align:left;
+  padding:8px 10px;border:1px solid var(--line);border-radius:3px;background:var(--paper);
+  cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,background .15s;
+}
+.moderow:hover{border-color:var(--acc)}
+.moderow[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--acc)}
+.moderow .mg{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:15px;
+  background:var(--card);border:1px solid var(--line-2);color:var(--ink-2);
+}
+.moderow[aria-pressed="true"] .mg{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.moderow .mt{display:block;min-width:0}
+.moderow .mt b{display:block;font-size:13.5px;font-weight:600}
+.moderow .mt i{display:block;font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.3}
+.moderow .mtog{font-family:"PT Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-3)}
+.moderow[aria-pressed="true"] .mtog{color:var(--acc)}
+
+.plist{display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;gap:9px}
+.prow .swatch{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px;flex:none;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35)}
+.prow input[type=text]{
+  flex:1;min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:3px;
+  background:var(--paper);color:var(--ink);font:inherit;font-size:14px;
+}
+.prow input[type=text]:focus{border-color:var(--acc);outline:none}
+.seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;flex:none}
+.seg button{border:0;background:transparent;padding:6px 9px;font-size:12.5px;cursor:pointer;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--acc-soft);color:var(--acc);font-weight:600}
+
+/* ============ game layout ============ */
+.game{display:flex;flex-direction:column;gap:14px;min-width:0}
+.table{
+  --tbl:#0E1311; --tbl2:#18211D; --tline:rgba(255,255,255,.13);
+  --tink:#EDF2EE; --tink2:#9FB0A6;
+  background:var(--tbl);padding:clamp(6px,1vw,14px);border-radius:8px;
+  box-shadow:0 30px 60px -30px rgba(0,0,0,.6), inset 0 0 0 1px var(--tline);
+  align-self:center;max-width:100%;
+}
+.board{
+  position:relative;aspect-ratio:1;display:grid;gap:2px;background:var(--tbl);
+  width:clamp(min(94vw, 560px), min(94vw, calc(100vh - 130px)), min(94vw, 1120px));
+}
+#dock{display:none}
+#barHome:empty{display:none}
+.below{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;align-items:start}
+
+/* ---- tiles ---- */
+.tile{
+  position:relative;background:#fff;color:#141F1A;overflow:hidden;cursor:pointer;
+  border-radius:2px;transition:transform .1s;
+}
+.tile:hover{transform:scale(1.04);z-index:2}
+.tile.sel{box-shadow:0 0 0 2px var(--acc)}
+.tile .strip{
+  position:absolute;display:grid;place-items:center;background:#8C968F;color:#fff;
+  font-family:"PT Mono",monospace;font-weight:700;font-size:calc(var(--cell)*.155);
+  letter-spacing:-.03em;line-height:1;
+}
+.tile.s0 .strip{left:0;right:0;bottom:0;height:23%}
+.tile.s2 .strip{left:0;right:0;top:0;height:23%}
+.tile.s1 .strip{top:0;bottom:0;left:0;width:23%;writing-mode:vertical-rl;transform:rotate(180deg)}
+.tile.s3 .strip{top:0;bottom:0;right:0;width:23%;writing-mode:vertical-rl}
+.tile .art{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;padding:7%}
+.tile.s0 .art{inset:0 0 23% 0}
+.tile.s2 .art{inset:23% 0 0 0}
+.tile.s1 .art{inset:0 0 0 23%}
+.tile.s3 .art{inset:0 23% 0 0}
+.tile .mk{display:block;line-height:0}
+.tile .mk svg{width:calc(var(--cell)*.42);height:calc(var(--cell)*.42);display:block}
+.tile .logo{max-width:100%;max-height:78%;object-fit:contain}
+.tile .wm{
+  font-family:"PT Sans Narrow",sans-serif;font-weight:700;text-transform:uppercase;
+  font-size:calc(var(--cell)*.15);line-height:1.03;text-align:center;letter-spacing:.005em;
+  color:#26332C;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow-wrap:anywhere;hyphens:auto;
+}
+.tile .own{position:absolute;inset:0;pointer-events:none;border-radius:2px}
+.tile.owned .own{box-shadow:inset 0 0 0 3px var(--ow)}
+.tile.owned .art{background:color-mix(in srgb, var(--ow) 9%, transparent)}
+.tile .hs{
+  position:absolute;top:2%;left:0;right:0;display:flex;justify-content:center;gap:3%;
+  font-size:calc(var(--cell)*.15);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;z-index:2;
+}
+.tile.s2 .hs{top:auto;bottom:2%}
+.tile.mortg .art{opacity:.4}
+.tile.mortg::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(45deg,transparent 0 5px,rgba(20,31,26,.22) 5px 6px);
+}
+.tile.corner{background:#F2F4F0}
+.tile.corner .art{inset:0}
+.tile.corner .mk svg{width:calc(var(--cell)*.5);height:calc(var(--cell)*.5)}
+.tile.corner .wm{color:#4F6157;font-size:calc(var(--cell)*.115)}
+.tile.special .mk svg{width:calc(var(--cell)*.46);height:calc(var(--cell)*.46)}
+/* мелкие клетки: у участков остаётся только крупная надпись-марка */
+.board.compact .tile.prop .mk{display:none}
+.board.compact .tile.prop .wm{font-size:calc(var(--cell)*.19);-webkit-line-clamp:3;color:#1B2620}
+.board.compact .tile .mk svg{width:calc(var(--cell)*.4);height:calc(var(--cell)*.4)}
+.board.compact .tile .wm{font-size:calc(var(--cell)*.135)}
+.tile.special .wm{-webkit-line-clamp:3;color:#3C4B43}
+.tile .art{overflow:hidden}
+.tile .wm{flex:0 0 auto}
+.tile.longnm .mk{display:none}
+.tile.longnm .wm{-webkit-line-clamp:3;font-size:calc(var(--cell)*.165)}
+.board.compact .tile.longnm .wm{font-size:calc(var(--cell)*.15)}
+.board.tiny .tile .strip{font-size:calc(var(--cell)*.19)}
+.board.tiny .tile.prop .wm{font-size:calc(var(--cell)*.22)}
+.board.tiny .tile:not(.prop) .wm{display:none}
+.board.tiny .tile .mk svg{width:calc(var(--cell)*.52);height:calc(var(--cell)*.52)}
+
+/* ---- felt (внутри поля) ---- */
+.felt{
+  background:var(--tbl);position:relative;overflow:hidden;
+  display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;
+  gap:2%;padding:2.4%;
+}
+.fseats{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:6px;min-width:0;overflow-y:auto;overflow-x:hidden}
+.fmid{grid-column:2;grid-row:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3%;min-width:0}
+.fchat{grid-column:1/-1;grid-row:2;min-width:0}
+.fseats{width:clamp(180px,27%,300px)}
+.finfo{display:flex;flex-direction:column;align-items:center;gap:calc(var(--cell)*.12)}
+.felt.solo{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.felt.solo .fmid{grid-column:1;grid-row:1}
+.felt.solo .fseats,.felt.solo .fchat{display:none}
+.felt .panel{background:var(--tbl2);border-color:var(--tline);color:var(--tink);box-shadow:none}
+.felt .panel-h{border-color:var(--tline)}
+.felt .lbl{color:var(--tink2)}
+.felt .pcard{
+  background:rgba(255,255,255,.06);border-color:var(--tline);color:var(--tink);
+  grid-template-columns:30px minmax(0,1fr);
+  grid-template-areas:"tk info" "tk money";row-gap:1px;
+}
+.felt .pcard .tk{grid-area:tk;align-self:start}
+.felt .pcard .pinfo{grid-area:info;min-width:0}
+.felt .pcard .money{grid-area:money;text-align:left;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+.felt .pcard .money small{display:inline;font-size:10.5px}
+.felt #pPlayers{border:0;background:transparent}
+.felt #pPlayers .panel-h{display:none}
+.felt #pPlayers .panel-b{padding:6px}
+.felt .pcard.turn{background:rgba(79,192,141,.16);border-color:var(--acc-2);box-shadow:inset 3px 0 0 var(--acc-2)}
+.felt .pcard .meta{color:var(--tink2)}
+.felt .pcard .money small{color:var(--tink2)}
+.felt .actions{background:var(--tbl2);border-color:var(--tline);color:var(--tink);justify-content:center}
+.felt .actions .hint{color:var(--tink2);text-align:center;flex:0 1 auto;min-width:0}
+.felt .actions .hint b{color:var(--tink)}
+.felt .btn{background:rgba(255,255,255,.07);border-color:var(--tline);color:var(--tink)}
+.felt .btn:hover:not(:disabled){background:rgba(255,255,255,.14);border-color:var(--acc-2)}
+.felt .btn.pri{background:#2FA877;border-color:#2FA877;color:#04140D;font-weight:700}
+.felt .btn.pri:hover:not(:disabled){background:#3EC08A;border-color:#3EC08A}
+.felt .btn.danger{border-color:#E0685A;color:#E0685A;background:transparent}
+.felt .chat{max-height:none;height:100%}
+.felt .msg{background:rgba(255,255,255,.07);border-color:var(--tline);color:var(--tink)}
+.felt .msg.mine{background:rgba(79,192,141,.18);border-color:var(--acc-2)}
+.felt .msg.sys{color:var(--tink2);background:transparent}
+.felt .addrow input{background:rgba(255,255,255,.06);border-color:var(--tline);color:var(--tink)}
+.felt .empty{color:var(--tink2)}
+
+.felt-brand{font-family:"Prata",serif;font-size:calc(var(--cell)*.34);line-height:1;color:#3EC08A;text-align:center}
+.felt-sub{font-size:calc(var(--cell)*.12);letter-spacing:.18em;text-transform:uppercase;color:var(--tink2);text-align:center}
+.turn-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:99px;
+  border:1px solid var(--tline);background:rgba(255,255,255,.06);max-width:100%;
+}
+.turn-chip .tk{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;flex:none}
+.turn-chip .who{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tink)}
+.turn-chip .cash{font-family:"PT Mono",monospace;font-size:13px;color:#3EC08A;font-variant-numeric:tabular-nums}
+
+.dice{display:flex;gap:calc(var(--cell)*.16);justify-content:center}
+.die{
+  width:min(calc(var(--cell)*1.15), 104px);height:min(calc(var(--cell)*1.15), 104px);min-width:40px;min-height:40px;
+  background:#fff;border:0;border-radius:16%;
+  display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:11%;gap:4%;
+  box-shadow:0 8px 18px -8px rgba(0,0,0,.8);
+}
+.die i{background:#141F1A;border-radius:50%;opacity:0;place-self:center;width:80%;aspect-ratio:1}
+.die.rolling{animation:shake .34s ease-in-out infinite}
+@keyframes shake{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-14%) rotate(-9deg)}70%{transform:translateY(-6%) rotate(8deg)}}
+.die[data-v="1"] i:nth-child(5),
+.die[data-v="2"] i:nth-child(1),.die[data-v="2"] i:nth-child(9),
+.die[data-v="3"] i:nth-child(1),.die[data-v="3"] i:nth-child(5),.die[data-v="3"] i:nth-child(9),
+.die[data-v="4"] i:nth-child(1),.die[data-v="4"] i:nth-child(3),.die[data-v="4"] i:nth-child(7),.die[data-v="4"] i:nth-child(9),
+.die[data-v="5"] i:nth-child(1),.die[data-v="5"] i:nth-child(3),.die[data-v="5"] i:nth-child(5),.die[data-v="5"] i:nth-child(7),.die[data-v="5"] i:nth-child(9),
+.die[data-v="6"] i:nth-child(1),.die[data-v="6"] i:nth-child(3),.die[data-v="6"] i:nth-child(4),.die[data-v="6"] i:nth-child(6),.die[data-v="6"] i:nth-child(7),.die[data-v="6"] i:nth-child(9){opacity:1}
+
+.felt-msg{
+  font-size:calc(var(--cell)*.13);color:var(--tink2);max-width:96%;text-align:center;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.felt-card{
+  border:1px solid var(--gold);background:rgba(211,167,87,.16);color:var(--tink);
+  padding:2.5% 4%;border-radius:4px;font-size:calc(var(--cell)*.135);max-width:96%;text-align:center;
+  animation:pop .32s cubic-bezier(.2,1.5,.4,1);
+}
+.felt-card b{display:block;font-size:calc(var(--cell)*.1);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .die.rolling{animation:none}.felt-card{animation:none}.tok{transition:none!important}.tile:hover{transform:none}
+}
+
+/* tokens */
+.toks{position:absolute;inset:0;pointer-events:none;z-index:3}
+.tok{
+  position:absolute;width:calc(var(--cell)*.34);height:calc(var(--cell)*.34);
+  border-radius:50%;display:grid;place-items:center;color:#fff;
+  font-size:calc(var(--cell)*.18);box-shadow:0 2px 5px rgba(0,0,0,.5),inset 0 0 0 1.5px rgba(255,255,255,.45);
+  transform:translate(-50%,-50%);transition:left .13s linear,top .13s linear;
+}
+.tok.act{outline:2px solid #fff;outline-offset:1px;z-index:4}
+.tok.jailed{filter:grayscale(.55)}
+
+/* action bar */
+.actions{
+  display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:center;
+  padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:5px;box-shadow:var(--shadow-s);
+}
+.actions .hint{flex:1;min-width:150px;color:var(--ink-2);font-size:13.5px}
+.actions .hint b{color:var(--ink)}
+.actions.warn{border-color:var(--red);background:var(--red-soft)}
+.felt .actions.warn{background:rgba(224,104,90,.18);border-color:#E0685A}
+
+/* side panels */
+.pcard{
+  display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:9px;align-items:center;
+  padding:9px 11px;border-radius:4px;border:1px solid var(--line);background:var(--card);
+}
+.pcard.turn{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}
+.pcard.dead{opacity:.45}
+.pcard .tk{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:15px}
+.pcard .pinfo{min-width:0}
+.pcard .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .meta{font-size:11.5px;color:var(--ink-3);display:flex;gap:7px;flex-wrap:wrap}
+.pcard .money{font-family:"PT Mono",monospace;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+.pcard .money small{display:block;font-size:10.5px;color:var(--ink-3);font-family:"Golos Text",sans-serif}
+
+.assets{display:flex;flex-direction:column;gap:6px;max-height:250px;overflow-y:auto}
+.arow{display:grid;grid-template-columns:6px 1fr auto;gap:8px;align-items:center;font-size:13px}
+.arow .clr{width:6px;height:26px;border-radius:2px}
+.arow .an{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arow .an em{font-style:normal;color:var(--ink-3);font-size:11px;font-family:"PT Mono",monospace}
+.arow .ops{display:flex;gap:4px;align-items:center}
+.empty{color:var(--ink-3);font-size:13px;padding:4px 0}
+
+.log{display:flex;flex-direction:column;gap:0;max-height:250px;overflow-y:auto;font-size:13px}
+.log div{padding:6px 0;border-bottom:1px dashed var(--line);color:var(--ink-2)}
+.log div:last-child{border-bottom:0}
+.log b{color:var(--ink);font-weight:600}
+.log .m{font-family:"PT Mono",monospace;color:var(--acc)}
+.log .neg{font-family:"PT Mono",monospace;color:var(--red)}
+
+/* property card popover */
+.detail{position:relative}
+.detail .dband{height:34px;border-radius:3px 3px 0 0;display:grid;place-items:center;color:#fff;
+  font-family:"PT Sans Narrow",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13px}
+.detail table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.detail td{padding:3px 0;border-bottom:1px dashed var(--line);color:var(--ink-2)}
+.detail td+td{text-align:right;font-family:"PT Mono",monospace;color:var(--ink)}
+.detail tr:last-child td{border-bottom:0}
+.detail .dnm{font-family:"Prata",serif;font-size:18px;margin:9px 0 2px}
+
+/* rules */
+details.rules{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:0 14px}
+details.rules summary{cursor:pointer;padding:11px 0;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between}
+details.rules summary::-webkit-details-marker{display:none}
+details.rules summary::after{content:"+";color:var(--acc);font-family:"PT Mono",monospace}
+details.rules[open] summary::after{content:"–"}
+details.rules ul{margin:0 0 14px;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+details.rules li{margin-bottom:5px}
+
+/* tabs + online */
+.setupwrap{display:flex;flex-direction:column;gap:18px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding-bottom:0}
+.tabs button{
+  border:1px solid transparent;border-bottom:0;background:transparent;padding:9px 15px;
+  cursor:pointer;font:inherit;font-size:14px;font-weight:500;color:var(--ink-3);border-radius:3px 3px 0 0;
+  position:relative;top:1px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-pressed="true"]{
+  background:var(--card);border-color:var(--line);color:var(--acc);font-weight:600;
+  box-shadow:0 -2px 0 var(--acc) inset;
+}
+.online-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.netnote{
+  padding:10px 13px;border:1px solid var(--line);border-radius:4px;background:var(--card);
+  font-size:13.5px;color:var(--ink-2);margin-bottom:16px;
+}
+.netnote.warn{border-color:var(--gold);background:var(--gold-soft);color:var(--ink)}
+.netnote.ok{border-color:var(--acc);background:var(--acc-soft)}
+.codebox{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;
+  padding:9px 12px;border:1px dashed var(--line-2);border-radius:3px;background:var(--paper);
+}
+.codebox b{display:block;font-size:20px;letter-spacing:.16em;color:var(--acc)}
+.friends{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
+.frow{display:grid;grid-template-columns:26px 1fr auto auto;gap:9px;align-items:center;font-size:13.5px}
+.frow .tk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;background:var(--ink-3)}
+.frow .tk.on{background:var(--acc)}
+.frow .fc{font-family:"PT Mono",monospace;font-size:12px;color:var(--ink-3);letter-spacing:.08em}
+.addrow{display:flex;gap:7px}
+.addrow input{
+  flex:1;min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:3px;
+  background:var(--paper);color:var(--ink);font:inherit;font-size:14px;
+}
+.addrow input:focus{border-color:var(--acc);outline:none}
+#fbCfg{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:3px;resize:vertical;
+  background:var(--paper);color:var(--ink);font-family:"PT Mono",monospace;font-size:12.5px;line-height:1.5;
+}
+#fbCfg:focus{border-color:var(--acc);outline:none}
+.seatrow{display:grid;grid-template-columns:26px 1fr auto;gap:9px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.seatrow:last-child{border-bottom:0}
+.seatrow .tk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px}
+.seatrow .tag{font-size:11px;color:var(--ink-3)}
+.roomcode{
+  display:flex;align-items:center;gap:10px;justify-content:space-between;
+  padding:11px 13px;border-radius:4px;background:var(--acc-soft);border:1px solid var(--acc);margin-bottom:13px;
+}
+.roomcode b{font-family:"PT Mono",monospace;font-size:24px;letter-spacing:.2em;color:var(--acc)}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:7px;max-height:230px;overflow-y:auto;margin-bottom:10px}
+.msg{max-width:88%;padding:6px 10px;border-radius:10px 10px 10px 3px;background:var(--paper);border:1px solid var(--line);font-size:13px}
+.msg b{display:block;font-size:11px;color:var(--acc);font-weight:600}
+.msg.mine{align-self:flex-end;border-radius:10px 10px 3px 10px;background:var(--acc-soft);border-color:var(--acc)}
+.msg.sys{align-self:center;background:transparent;border:0;color:var(--ink-3);font-size:12px;padding:2px}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:80;
+  background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-size:14px;
+  box-shadow:var(--shadow);max-width:90vw;
+}
+
+/* trade modal */
+.modal{
+  position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;
+  background:color-mix(in srgb, var(--ink) 62%, transparent);
+  backdrop-filter:blur(2px);
+}
+.modal-card{
+  background:var(--card);border:1px solid var(--line-2);border-radius:6px;
+  width:100%;max-width:740px;max-height:88vh;overflow:auto;box-shadow:var(--shadow);
+}
+.tr-h{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tr-h h3{font-family:"Prata",serif;font-size:19px}
+.tr-b{padding:16px}
+.tr-who{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tr-who button{
+  border:1px solid var(--line);background:var(--paper);border-radius:99px;padding:5px 12px 5px 6px;
+  display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;
+}
+.tr-who button[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);color:var(--acc);font-weight:600}
+.tr-who .tk{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px}
+.tr-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tr-col h4{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:8px}
+.tr-list{display:flex;flex-direction:column;gap:3px;max-height:230px;overflow-y:auto;padding-right:2px}
+.tr-item{display:flex;align-items:center;gap:8px;padding:5px 7px;border:1px solid transparent;border-radius:3px;cursor:pointer;font-size:13px}
+.tr-item:hover{background:var(--paper)}
+.tr-item[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft)}
+.tr-item .clr{width:5px;height:20px;border-radius:2px;flex:none}
+.tr-item .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr-item .v{font-family:"PT Mono",monospace;font-size:12px;color:var(--ink-3)}
+.tr-item.locked{opacity:.42;cursor:not-allowed}
+.tr-money{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px}
+.tr-money input{
+  width:110px;padding:6px 9px;border:1px solid var(--line);border-radius:3px;
+  background:var(--paper);color:var(--ink);font-family:"PT Mono",monospace;font-size:13px;
+}
+.tr-pact{margin-top:14px;padding-top:13px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:8px}
+.tr-pact label{display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer}
+.tr-pact select{padding:5px 8px;border:1px solid var(--line);border-radius:3px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px}
+.tr-sum{margin-top:14px;padding:11px 13px;background:var(--paper);border:1px solid var(--line);border-radius:3px;font-size:13px;color:var(--ink-2)}
+.tr-foot{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;padding:13px 16px;border-top:1px solid var(--line)}
+.pactchip{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:1px 7px;border-radius:99px;
+  border:1px solid var(--gold);color:var(--gold);background:var(--gold-soft);
+}
+@media (max-width:620px){ .tr-cols{grid-template-columns:1fr} }
+
+/* game over */
+.over{background:var(--card);border:1px solid var(--acc);border-radius:5px;padding:18px;text-align:center}
+.over h2{font-family:"Prata",serif;font-size:26px;color:var(--acc);margin-bottom:6px}
+.stand{display:flex;flex-direction:column;gap:6px;margin:14px 0;text-align:left}
+.stand .r{display:grid;grid-template-columns:22px 1fr auto;gap:9px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:3px;font-size:14px}
+.stand .r .pl{font-family:"Prata",serif;color:var(--ink-3)}
+
+@media (max-width:1000px){
+  .online-grid{grid-template-columns:minmax(0,1fr)}
+  .setup{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .wrap{padding:14px 11px 44px}
+  .masthead{flex-direction:column;align-items:flex-start;gap:10px}
+  .board{border-width:2px}
+  .actions{position:sticky;bottom:0;z-index:9}
+}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <div class="seal dspl">₤</div>
+      <div>
+        <h1>Монополия Гранд-Тур</h1>
+        <div class="sub" id="brandSub">Поле растёт вместе с числом игроков</div>
+      </div>
+    </div>
+    <div class="mast-right" id="mastActions"></div>
+  </header>
+
+  <!-- ============ SETUP ============ -->
+  <section class="setupwrap" id="setup">
+    <div class="tabs" id="tabs">
+      <button type="button" data-t="local" aria-pressed="true">За одним устройством</button>
+      <button type="button" data-t="online">Онлайн с друзьями</button>
+    </div>
+
+    <div class="setup" id="localPane">
+    <div>
+      <div class="setup-lead">
+        <div class="kicker">Гомель · правила стола</div>
+        <h2>Чем больше игроков — тем длиннее маршрут</h2>
+        <p>Двое едут по короткому кругу из 40 клеток. Каждый новый участник удлиняет каждую
+        сторону поля на две клетки: появляются новые районы, вокзалы, налоги и карточки.
+        На восьмерых круг вырастает до 88 клеток и 20 цветовых групп — от Осовцов до Советской.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span class="lbl">Сколько игроков</span><span class="lbl" id="cntEcho">4</span></div>
+        <div class="panel-b">
+          <div class="count-row" id="countRow"></div>
+          <div class="growth" id="growth"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <div class="panel-h"><span class="lbl">Оформление клеток</span><span class="lbl" id="packEcho"></span></div>
+        <div class="panel-b">
+          <div class="packs" id="packs"></div>
+          <div class="addrow" style="margin-top:11px">
+            <input type="text" id="packName" maxlength="24" placeholder="название своего пака" aria-label="Название пака">
+            <label class="btn" for="packFiles">Выбрать картинки</label>
+            <input type="file" id="packFiles" accept="image/*" multiple hidden>
+          </div>
+          <div class="lbl" style="margin-top:9px;text-transform:none;letter-spacing:0;line-height:1.4">
+            Имя файла станет названием клетки, порядок выбора — порядком на поле, каждые три
+            картинки собираются в цветную группу. Картинки сжимаются до 128&nbsp;px и лежат в вашем браузере.
+          </div>
+          <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
+            <button class="btn tiny" id="packExport" type="button">Выгрузить пак</button>
+            <label class="btn tiny" for="packImport">Загрузить пак</label>
+            <input type="file" id="packImport" accept=".json,application/json" hidden>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <div class="panel-h"><span class="lbl">Режимы стола</span><span class="lbl">можно отключить</span></div>
+        <div class="panel-b"><div class="modes" id="modes"></div></div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <div class="panel-h"><span class="lbl">Участники</span><span class="lbl">имя · человек или бот</span></div>
+        <div class="panel-b"><div class="plist" id="plist"></div></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn pri big" id="startBtn">Начать партию</button>
+        <button class="btn big" id="resumeBtn" hidden>Продолжить сохранённую</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-h"><span class="lbl">Предпросмотр поля</span><span class="lbl" id="miniEcho"></span></div>
+        <div class="panel-b"><div class="mini" id="mini"></div></div>
+      </div>
+      <details class="rules" style="margin-top:14px">
+        <summary>Как играем</summary>
+        <ul>
+          <li>Бросок двух кубиков, движение по кругу; за проход через <b>СТАРТ</b> — жалование.</li>
+          <li>Свободная клетка: можно купить по цене на клетке или отказаться — тогда она остаётся у банка.</li>
+          <li>Собрали всю цветовую группу — базовая аренда удваивается, можно строить дома и отель.</li>
+          <li>Группы бывают по три участка и по два: самая дешёвая (окраина) и самая дорогая (центр) — пары.</li>
+          <li><b>Сделки:</b> в свой ход можно предложить любому игроку обмен участками с доплатой,
+              а ещё договориться, что кто-то из вас не берёт с другого аренду несколько кругов.</li>
+          <li>Дубль даёт ещё один бросок; три дубля подряд — изолятор.</li>
+          <li>Не хватает денег — закладывайте участки и продавайте дома. Не помогло — банкротство.</li>
+          <li>Побеждает последний, кто остался на поле.</li>
+          <li><b>Онлайн:</b> на вкладке «Онлайн с друзьями» заведите имя, обменяйтесь кодами,
+              создайте комнату и отправьте другу её код — он сядет за стол со своего устройства.
+              В партии работает чат, ходы и сделки идут по сети.</li>
+        </ul>
+      </details>
+    </div>
+    </div>
+
+    <div class="online" id="onlinePane" hidden>
+      <div class="netnote" id="netnote">Проверяем связь…</div>
+      <div class="online-grid">
+        <div>
+          <div class="panel">
+            <div class="panel-h"><span class="lbl">Профиль</span><span class="lbl" id="netState">—</span></div>
+            <div class="panel-b">
+              <div class="prow">
+                <div class="swatch" style="background:#17654A">♞</div>
+                <input type="text" id="meName" maxlength="14" placeholder="Ваше имя" aria-label="Ваше имя">
+              </div>
+              <div class="codebox">
+                <div><span class="lbl">Ваш код для друзей</span><b class="mono" id="meCode">—</b></div>
+                <button class="btn tiny" id="copyCode" type="button">копировать</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h"><span class="lbl">Друзья</span><span class="lbl" id="frCount"></span></div>
+            <div class="panel-b">
+              <div class="friends" id="friends"></div>
+              <div class="addrow">
+                <input type="text" id="frCode" maxlength="8" placeholder="код друга" aria-label="Код друга">
+                <button class="btn" id="frAdd" type="button">Добавить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><span class="lbl">Комната</span><span class="lbl" id="roomEcho"></span></div>
+          <div class="panel-b" id="roomBody"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section class="game" id="game" hidden>
+    <div class="table"><div class="board" id="board"></div></div>
+    <div id="barHome"><div class="actions" id="actions"></div></div>
+    <div id="overBox"></div>
+    <div class="below" id="below">
+      <div class="panel" id="pPlayers">
+        <div class="panel-h"><span class="lbl">Игроки</span><span class="lbl" id="boardEcho"></span></div>
+        <div class="panel-b" style="display:flex;flex-direction:column;gap:7px" id="players"></div>
+      </div>
+      <div class="panel" id="pAssets">
+        <div class="panel-h"><span class="lbl">Активы хода</span><span class="lbl" id="assetsEcho"></span></div>
+        <div class="panel-b"><div class="assets" id="assets"></div></div>
+      </div>
+      <div class="panel detail" id="detail" hidden></div>
+      <div class="panel" id="chatPanel" hidden>
+        <div class="panel-h"><span class="lbl">Чат</span><span class="lbl" id="chatEcho"></span></div>
+        <div class="panel-b">
+          <div class="chat" id="chatList"></div>
+          <div class="addrow">
+            <input type="text" id="chatInput" maxlength="240" placeholder="Сообщение" aria-label="Сообщение в чат">
+            <button class="btn" id="chatSend" type="button">Отправить</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" id="pLog">
+        <div class="panel-h"><span class="lbl">Журнал</span></div>
+        <div class="panel-b"><div class="log" id="log"></div></div>
+      </div>
+    </div>
+    <div id="dock"></div>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <div class="modal" id="trade" hidden>
+    <div class="modal-card" id="tradeBox"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================= data ======================= */
+var CUR = "руб";
+/* ===== Знаки для эмблем: заливка currentColor, viewBox 24×24 ===== */
+var MARKS = {
+  orbit:  '<circle cx="12" cy="12" r="4.4"/><path fill-rule="evenodd" d="M12 2.4A9.6 9.6 0 1112 21.6 9.6 9.6 0 0112 2.4zm0 2.5a7.1 7.1 0 100 14.2 7.1 7.1 0 000-14.2z" opacity=".42"/>',
+  chevron:'<path d="M2.4 5.4h4.8l6.6 6.6-6.6 6.6H2.4L9 12z"/><path d="M10.6 5.4h4.8L22 12l-6.6 6.6h-4.8L17.2 12z" opacity=".45"/>',
+  wave:   '<rect x="2" y="6.4" width="20" height="3.2" rx="1.6"/><rect x="5.2" y="11.6" width="13.6" height="3.2" rx="1.6" opacity=".5"/><rect x="2" y="16.8" width="20" height="3.2" rx="1.6"/>',
+  star4:  '<path d="M12 1.4 14.8 9.2 22.6 12l-7.8 2.8L12 22.6 9.2 14.8 1.4 12l7.8-2.8z"/>',
+  hex:    '<path fill-rule="evenodd" d="M12 1.8 21.4 7v10L12 22.2 2.6 17V7zm0 4.6L7 9.2v5.6l5 2.8 5-2.8V9.2z"/>',
+  droplet:'<path d="M12 1.8s7.4 8 7.4 12.6a7.4 7.4 0 11-14.8 0C4.6 9.8 12 1.8 12 1.8z"/>',
+  blocks: '<rect x="2.4" y="2.4" width="8.4" height="8.4" rx="1.8"/><rect x="13.2" y="2.4" width="8.4" height="8.4" rx="1.8" opacity=".45"/><rect x="2.4" y="13.2" width="8.4" height="8.4" rx="1.8" opacity=".45"/><rect x="13.2" y="13.2" width="8.4" height="8.4" rx="1.8"/>',
+  swoosh: '<path d="M1.8 16.4C8.4 15 14.8 11 22.2 3.6c-1.6 9.8-8.4 15.6-20.4 16.8z"/>',
+  bolt:   '<path d="M14.8 1.4 4.2 14.6h6.6l-1.4 8.4L20 9.4h-6.8z"/>',
+  leaf:   '<path d="M12 1.8c5.2 1.8 8.6 6.4 8.6 11.6 0 1.1-.2 2.1-.5 3.1-3.1-.8-5.8-2.7-7.1-5.4v11.1h-2V11.1c-1.3 2.7-4 4.6-7.1 5.4-.3-1-.5-2-.5-3.1C3.4 8.2 6.8 3.6 12 1.8z"/>',
+  prism:  '<path fill-rule="evenodd" d="M12 1.8 22.4 20.6H1.6zm0 6.6-5.8 9.8h11.6z"/>',
+  ring:   '<path fill-rule="evenodd" d="M12 2.2a9.8 9.8 0 110 19.6 9.8 9.8 0 010-19.6zm0 4a5.8 5.8 0 100 11.6 5.8 5.8 0 000-11.6z"/>',
+  plus:   '<path d="M9.4 2.2h5.2v7.2h7.2v5.2h-7.2v7.2H9.4v-7.2H2.2V9.4h7.2z"/>',
+  lens:   '<path fill-rule="evenodd" d="M12 3.6c5.4 0 9.8 3.8 11.4 8.4C21.8 16.6 17.4 20.4 12 20.4S2.2 16.6.6 12C2.2 7.4 6.6 3.6 12 3.6zm0 4.8a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2z"/>',
+  peak:   '<path d="M1.4 20.4 9.2 5.6l4.4 7.4 2.6-3.8 6.4 11.2z"/>',
+  cross:  '<path d="M4.2 2.4 12 8.6l7.8-6.2 2.4 2.4L16 12l6.2 7.8-2.4 2.4L12 15.4l-7.8 6.8-2.4-2.4L8 12 1.8 4.8z" opacity=".9"/>'
+};
+
+/* ===== Паки: цвет + знак + названия. Первая группа — дешёвая, последняя — дорогая ===== */
+var PACK_BRANDS = {
+  id:"brands", name:"Бренды", note:"вымышленные марки",
+  depot:["Аэропорт","Автовокзал","Порт","Вокзал"],
+  utils:["Энергосеть","Водоканал"],
+  groups:[
+    {g:"Фастфуд",     c:"#D6452F", k:"plus",    items:["Бурго","Курица+","Панелло"]},
+    {g:"Напитки",     c:"#E0851F", k:"droplet", items:["Физзо","Зеста","Кола Нова"]},
+    {g:"Маркеты",     c:"#C9A227", k:"blocks",  items:["Базаро","Шопио","Маркета"]},
+    {g:"Связь",       c:"#5A9E2F", k:"wave",    items:["Телора","Мобион","Зетел"]},
+    {g:"Электроника", c:"#2E9E86", k:"hex",     items:["Нувель","Киоро","Пиксера"]},
+    {g:"Игры",        c:"#2E86C9", k:"prism",   items:["Аркадия","Битфордж","Нова Плей"]},
+    {g:"Соцсети",     c:"#2E63D6", k:"orbit",   items:["Чатли","Френзи","Вайбли"]},
+    {g:"Спорт",       c:"#7A4FD1", k:"swoosh",  items:["Стрида","Легра","Эоло"]},
+    {g:"Стройка",     c:"#8A6A3E", k:"peak",    items:["Бетона","Краникс","Стило"]},
+    {g:"Банки",       c:"#1F6B4F", k:"ring",    items:["Аргента","Кредо","Волта"]},
+    {g:"Отели",       c:"#B0407A", k:"star4",   items:["Новара","Солмар","Гранд Рест"]},
+    {g:"Авиалинии",   c:"#1E7FB5", k:"chevron", items:["Аэроза","СкайБалт","Волара"]},
+    {g:"Косметика",   c:"#D9557F", k:"leaf",    items:["Лумира","Беллани","Ауре"]},
+    {g:"Авто",        c:"#4A4F57", k:"lens",    items:["Волтра","Марлекс","Кайдан"]},
+    {g:"Часы",        c:"#8A7B2E", k:"bolt",    items:["Хорлум","Темпира","Ауреон"]},
+    {g:"Мода",        c:"#171717", k:"cross",   items:["Ивуар","Мезон Рю","Венто"]}
+  ]
+};
+var PACK_GOMEL = {
+  id:"gomel", name:"Гомель", note:"улицы и районы",
+  depot:["Вокзал","Автовокзал","Речной порт","Аэропорт"],
+  utils:["Энергосбыт","Водоканал"],
+  groups:[
+    {g:"Осовцы",          c:"#6B4A2B", k:"leaf",    items:["Луговая","Садовая","Криничная"]},
+    {g:"Романовичи",      c:"#7FB8E0", k:"peak",    items:["Полевая","Дачная","Лесная"]},
+    {g:"Прудок",          c:"#D45FA0", k:"wave",    items:["Первомайская","Молодёжная","Юбилейная"]},
+    {g:"Якубовка",        c:"#E28A2B", k:"plus",    items:["Мичурина","Чапаева","Фрунзе"]},
+    {g:"Мильча",          c:"#C9382E", k:"star4",   items:["Быховская","Могилёвская","Черниговская"]},
+    {g:"Давыдовка",       c:"#D9B023", k:"blocks",  items:["Портовая","Заводская","Индустриальная"]},
+    {g:"Костюковка",      c:"#3D9A4E", k:"droplet", items:["Ленинградская","Гомельская","Строителей"]},
+    {g:"Хутор",           c:"#2E5FA8", k:"hex",     items:["Лещинская","Осипова","Жарковского"]},
+    {g:"Клёнковский",     c:"#7E57C2", k:"leaf",    items:["Огоренко","Тимофеенко","Кожара"]},
+    {g:"Красный Маяк",    c:"#0E9AA0", k:"bolt",    items:["Тельмана","Ефремова","Владимирова"]},
+    {g:"Новобелица",      c:"#B9563F", k:"chevron", items:["Ильича","Севастопольская","Госпитальная"]},
+    {g:"Монастырёк",      c:"#8A9C22", k:"prism",   items:["Волотовская","Речицкая","Междугородняя"]},
+    {g:"Сельмаш",         c:"#E0719A", k:"ring",    items:["Барыкина","Каменщикова","Механическая"]},
+    {g:"Мельников Луг",   c:"#5C6BC0", k:"swoosh",  items:["Мазурова","Свиридова","Хатаевича"]},
+    {g:"Волотова",        c:"#00897B", k:"blocks",  items:["Косарева","Б. Хмельницкого","Головацкого"]},
+    {g:"Фестивальный",    c:"#A97BE0", k:"orbit",   items:["Курчатова","Гагарина","Пушкина"]},
+    {g:"Аэродром",        c:"#EF7B36", k:"chevron", items:["Полесская","Билецкого","Интернациональная"]},
+    {g:"Железнодорожный", c:"#4DAFA6", k:"cross",   items:["Привокзальная","Комсомольская","Пролетарская"]},
+    {g:"Площадь Победы",  c:"#9E7B3F", k:"star4",   items:["Победы","Кирова","Крестьянская"]},
+    {g:"Центр",           c:"#171717", k:"lens",    items:["Ланге","Советская","Румянцевская"]}
+  ]
+};
+var PACK_KEY = "grandtour.packs.v1", PACK_SEL = "grandtour.pack.v1";
+var userPacks = [], packId = "brands";
+
+function builtinPacks(){ return [PACK_BRANDS, PACK_GOMEL]; }
+function allPacks(){ return builtinPacks().concat(userPacks); }
+function packById(id){
+  var all = allPacks();
+  for(var i=0;i<all.length;i++) if(all[i].id === id) return all[i];
+  return PACK_BRANDS;
+}
+function loadPacks(){
+  try{ userPacks = JSON.parse(localStorage.getItem(PACK_KEY)) || []; }catch(e){ userPacks = []; }
+  if(!Array.isArray(userPacks)) userPacks = [];
+  try{ packId = localStorage.getItem(PACK_SEL) || "brands"; }catch(e){}
+  if(!packById(packId)) packId = "brands";
+}
+function savePacks(){
+  try{ localStorage.setItem(PACK_KEY, JSON.stringify(userPacks)); }catch(e){
+    flash("Не хватило места в памяти браузера — уменьшите пак");
+  }
+  try{ localStorage.setItem(PACK_SEL, packId); }catch(e){}
+}
+
+/* группа пака под индекс группы на поле */
+var MARK_KEYS = ["orbit","chevron","wave","star4","hex","droplet","blocks","swoosh",
+                 "bolt","leaf","prism","ring","plus","lens","peak","cross"];
+function markFor(baseKey, k){
+  var at = MARK_KEYS.indexOf(baseKey);
+  if(at < 0) at = 0;
+  return MARK_KEYS[(at + k*5) % MARK_KEYS.length];
+}
+function packGroup(pack, gi, groupCount){
+  var gs = pack.groups;
+  if(!gs || !gs.length) return {g:"Участок", c:"#888", k:"blocks", items:[]};
+  var slot = (groupCount <= 1) ? 0 : Math.round(gi * (gs.length - 1) / (groupCount - 1));
+  return gs[Math.min(gs.length - 1, Math.max(0, slot))];
+}
+
+/* ===== эмблемы специальных клеток (цвет + силуэт) ===== */
+var SP_ART = {
+  go:        {c:"#17654A", m:'<path d="M3.4 10.4h9.8V6.2L20.6 12l-7.4 5.8v-4.2H3.4z"/>'},
+  jail:      {c:"#5B6B62", m:'<path fill-rule="evenodd" d="M3.4 3.4h17.2v17.2H3.4zm2.4 2.4v12.4h1.8V5.8zm4.2 0v12.4h1.8V5.8zm4.2 0v12.4h1.8V5.8z"/>'},
+  parking:   {c:"#B8862A", m:'<rect x="3.6" y="4.6" width="16.8" height="5" rx="2"/><rect x="5.6" y="10.6" width="12.8" height="4.2" rx="1.8"/><rect x="7.6" y="15.8" width="8.8" height="4.2" rx="1.8"/>'},
+  gotojail:  {c:"#A6392C", m:'<path d="M2.6 10.4h8.2V6.2L18.2 12l-7.4 5.8v-4.2H2.6z"/><rect x="19.2" y="3.4" width="2.6" height="17.2" rx="1"/>'},
+  transport0:{c:"#2E5FA8", m:'<rect x="4.6" y="3.4" width="14.8" height="11.4" rx="2.4"/><circle cx="8.4" cy="18.4" r="2.4"/><circle cx="15.6" cy="18.4" r="2.4"/>'},
+  transport1:{c:"#0E7C86", m:'<rect x="2.8" y="4.6" width="18.4" height="10.4" rx="2.2"/><circle cx="7" cy="17.8" r="2.4"/><circle cx="17" cy="17.8" r="2.4"/>'},
+  transport2:{c:"#1F5E8C", m:'<path d="M11 2.6h2v11h-2z"/><rect x="7" y="7.4" width="10" height="2.2" rx="1"/><path d="M3.2 13.6h17.6c-.6 4.6-4.4 7.4-8.8 7.4s-8.2-2.8-8.8-7.4z"/>'},
+  transport3:{c:"#4C6BB5", m:'<path d="M22.2 2.4 1.8 10.2l7.4 2.8 2.8 8z"/>'},
+  utility0:  {c:"#D9A417", m:'<path d="M14.8 1.4 4.2 14.6h6.6l-1.4 8.4L20 9.4h-6.8z"/>'},
+  utility1:  {c:"#2196A8", m:'<path d="M12 1.8s7.4 8 7.4 12.6a7.4 7.4 0 11-14.8 0C4.6 9.8 12 1.8 12 1.8z"/>'},
+  tax:       {c:"#4A5A52", m:'<rect x="11" y="3.4" width="2" height="16.4" rx="1"/><rect x="5" y="7" width="14" height="2.2" rx="1.1"/><path d="M5.4 9.6 1.8 16.4h7.2z"/><path d="M18.6 9.6 22.2 16.4H15z"/><rect x="7.4" y="19.4" width="9.2" height="2.2" rx="1.1"/>'},
+  chest:     {c:"#0E8A6E", m:'<path d="M3.4 8.6h17.2V20a1.4 1.4 0 01-1.4 1.4H4.8A1.4 1.4 0 013.4 20z"/><path d="M4.8 3.4h14.4l2 4.4H2.8z"/>'},
+  chance:    {c:"#3D9A4E", m:'<path d="M8.2 8.6a3.9 3.9 0 117.6 1.2c0 2.1-2.8 2.6-2.8 5h-2.4c0-3.2 2.8-3.4 2.8-5a1.5 1.5 0 10-3 0z"/><circle cx="12" cy="19" r="1.8"/>'},
+  portal:    {c:"#7E57C2", m:'<path d="M12 2.4c4.8 0 8.8 2.1 8.8 4.8S16.8 12 12 12 3.2 9.9 3.2 7.2 7.2 2.4 12 2.4z" opacity=".5"/><path d="M12 8.4c3.3 0 6 1.6 6 3.6s-2.7 3.6-6 3.6-6-1.6-6-3.6 2.7-3.6 6-3.6z" opacity=".75"/><path d="M12 13.8c2 0 3.6 1 3.6 2.3S14 18.4 12 18.4s-3.6-1-3.6-2.3 1.6-2.3 3.6-2.3z"/>'},
+  casino:    {c:"#C9382E", m:'<path fill-rule="evenodd" d="M3.4 3.4h17.2v17.2H3.4zm2.4 2.4v12.4h12.4V5.8z"/><circle cx="8.8" cy="8.8" r="1.7"/><circle cx="15.2" cy="8.8" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="8.8" cy="15.2" r="1.7"/><circle cx="15.2" cy="15.2" r="1.7"/>'},
+  swap:      {c:"#17654A", m:'<path d="M2.6 8.2h13.2v-3l5.6 4.4-5.6 4.4v-3H2.6z"/><path d="M21.4 15.8H8.2v-3l-5.6 4.4 5.6 4.4v-3h13.2z" opacity=".6"/>'}
+};
+
+function artFor(sp){
+  if(sp.type === "prop") return {c:sp.color || "#888", m:MARKS[sp.mark] || MARKS.blocks};
+  if(sp.type === "transport") return SP_ART["transport" + (sp.no || 0)];
+  if(sp.type === "utility")   return SP_ART["utility" + (sp.no || 0)];
+  return SP_ART[sp.type] || null;
+}
+/* содержимое клетки: картинка пака или знак + название */
+function tileArt(sp){
+  if(sp.img){
+    return '<img class="logo" src="' + sp.img + '" alt="' + escape_(sp.name || "") + '">';
+  }
+  var a = artFor(sp);
+  if(!a) return "";
+  var wm = (sp.type === "chance" || sp.type === "chest")
+    ? "" : '<span class="wm">' + escape_(sp.name) + '</span>';
+  return '<span class="mk" style="color:' + a.c + '">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">' + a.m + '</g></svg></span>' + wm;
+}
+
+var GCOL = ["#6B4A2B","#7FB8E0","#D45FA0","#E28A2B","#C9382E","#D9B023","#3D9A4E","#2E5FA8",
+            "#7E57C2","#0E9AA0","#B9563F","#8A9C22","#E0719A","#5C6BC0","#00897B","#A97BE0",
+            "#EF7B36","#4DAFA6","#9E7B3F","#CF4F86"];
+var PCOL = ["#C9382E","#2E5FA8","#3D9A4E","#C99A1E","#7E57C2","#E07B2B","#0E9AA0","#D4529A"];
+var PTOK = ["♞","♜","⚓","⚙","♠","☘","✈","♛"];
+var DEPOT = [
+  {n:"Гомель-Пассажирский", g:"⛨"},
+  {n:"Автовокзал",          g:"⛟"},
+  {n:"Речной порт",         g:"⚓"},
+  {n:"Аэропорт Гомель",     g:"✈"}
+];
+var UTILS = [
+  {n:"Гомельэнерго",  g:"⚡"},
+  {n:"Горводоканал",  g:"♨"}
+];
+
+/* ======================= board builder ======================= */
+function sideLen(n){ return n <= 5 ? 9 : 9 + (n-5)*2; }   // до пяти игроков — классические 40 клеток
+
+function buildBoard(nPlayers, modes, pack){
+  modes = modes || {};
+  pack = pack || packById(packId);
+  var L = sideLen(nPlayers), N = 4*L+4;
+  var corners = [
+    {type:"go",       name:"Старт",      glyph:"★"},
+    {type:"jail",     name:"Изолятор",   glyph:"⛓"},
+    {type:"parking",  name:"Стоянка",    glyph:"Ⓟ"},
+    {type:"gotojail", name:"В изолятор", glyph:"↪"}
+  ];
+  var b = [], plan = [], cardFlip = 0, depot = 0, util = 0;
+
+  /* 1. plan the blocks of every side: special, property group, special, …
+        side 0 opens with a PAIR (cheapest), side 3 closes with a PAIR (priciest) */
+  for(var s=0; s<4; s++){
+    var blocks = [], rem = L, wantS = true;
+    while(rem > 0){
+      if(wantS || rem === 1){ blocks.push({t:"S"}); rem -= 1; wantS = false; }
+      else { var g = (rem === 2) ? 2 : 3; blocks.push({t:"P", n:g}); rem -= g; wantS = true; }
+    }
+    if(s === 0) makePair(blocks, firstProp(blocks), 1);
+    if(s === 3) makePair(blocks, lastProp(blocks), 0);
+    plan.push(blocks);
+  }
+  function firstProp(bs){ for(var i=0;i<bs.length;i++) if(bs[i].t === "P") return i; return -1; }
+  function lastProp(bs){ for(var i=bs.length-1;i>=0;i--) if(bs[i].t === "P") return i; return -1; }
+  /* shrink a trio to a duo and spend the freed cell on one more special */
+  function makePair(bs, at, after){
+    if(at < 0 || bs[at].n !== 3) return;
+    bs[at].n = 2;
+    bs.splice(at + after, 0, {t:"S"});
+  }
+
+  /* 2. lay out the spaces */
+  var groupCount = 0;
+  plan.forEach(function(bs){ bs.forEach(function(bl){ if(bl.t === "P") groupCount++; }); });
+  var gi = 0;
+
+  for(var s2=0; s2<4; s2++){
+    b.push(clone(corners[s2]));
+    var bs2 = plan[s2];
+    var nS = 0; for(var q=0;q<bs2.length;q++) if(bs2[q].t === "S") nS++;
+    var mid = Math.floor((nS-1)/2), si = 0;
+
+    for(var bi=0; bi<bs2.length; bi++){
+      var bl2 = bs2[bi];
+      if(bl2.t === "S"){
+        var sp;
+        if(si === mid){
+          var dn = depot++ % 4;
+          sp = {type:"transport", name:(pack.depot && pack.depot[dn]) || DEPOT[dn].n, price:200, no:dn};
+        } else if(si === 0 && (s2 === 1 || s2 === 3)){
+          var un = util++ % 2;
+          sp = {type:"utility", name:(pack.utils && pack.utils[un]) || UTILS[un].n, price:150, no:un};
+        } else if(si === nS-1 && (s2 === 0 || s2 === 2)){
+          sp = (s2 === 0)
+            ? {type:"tax", name:"Налоговая", glyph:"⚖", amount:200}
+            : {type:"tax", name:"Роскошь", glyph:"⚖", amount:100};
+        } else {
+          sp = (cardFlip++ % 2 === 0)
+            ? {type:"chance", name:"Шанс", glyph:"?"}
+            : {type:"chest",  name:"Казна", glyph:"◈"};
+        }
+        b.push(sp); si++;
+      } else {
+        var grp = packGroup(pack, gi, groupCount);
+        for(var k=0; k<bl2.n; k++){
+          var it = grp.items[k] || {};
+          if(typeof it === "string") it = {n:it};
+          b.push({type:"prop", group:gi, groupName:grp.g,
+                  name:(it.n || it.name || (grp.g + " " + (k+1))),
+                  img:(it.img || null), color:grp.c, mark:markFor(grp.k, k),
+                  groupSize:bl2.n, owner:null, houses:0, mortgaged:false});
+        }
+        gi++;
+      }
+    }
+  }
+  installModes(b, modes);
+
+  // price the deeds by how far around the circuit they sit
+  for(var i=0;i<b.length;i++){
+    var sp2 = b[i];
+    if(sp2.type === "prop"){
+      var t = i / N;
+      var price = Math.round((60 + 340*t)/10)*10;
+      var base = Math.max(2, Math.round(price*(0.05 + 0.08*t)));
+      sp2.price = price;
+      sp2.rents = [base, r5(base*5), r5(base*15), r5(base*40), r5(base*55), r5(base*70)];
+      sp2.houseCost = 50*(1 + Math.min(3, Math.floor(t*4)));
+    }
+    if(sp2.type === "transport" || sp2.type === "utility"){
+      sp2.owner = null; sp2.mortgaged = false; sp2.houses = 0;
+    }
+    sp2.idx = i;
+  }
+  b.meta = {L:L, N:N, groups:gi, modes:modes, pack:pack.id};
+  return b;
+}
+
+/* turn some Шанс/Казна cells into interactive mode cells */
+function installModes(b, modes){
+  var slots = [];
+  for(var i=0;i<b.length;i++) if(b[i].type === "chance" || b[i].type === "chest") slots.push(i);
+  var budget = Math.max(0, slots.length - Math.max(2, Math.floor(slots.length/2)));
+  var picked = [], stride = slots.length / Math.max(1, budget);
+  for(var k=0;k<budget;k++) picked.push(slots[Math.min(slots.length-1, Math.round(k*stride))]);
+  picked = picked.filter(function(v, ix, arr){ return arr.indexOf(v) === ix; });
+
+  var take = 0;
+  function next(){ return (take < picked.length) ? picked[take++] : -1; }
+
+  if(modes.portal){
+    var pairs = (picked.length >= 6) ? 2 : 1, gates = [];
+    for(var q=0;q<pairs*2;q++){ var ix = next(); if(ix >= 0) gates.push(ix); }
+    if(gates.length >= 2){
+      // link opposite gates: 0↔half, 1↔half+1 …
+      var half = Math.floor(gates.length/2);
+      for(var g=0; g<half; g++){
+        var a = gates[g], z = gates[g+half];
+        b[a] = {type:"portal", name:"Портал", glyph:"⊛", pair:z, gate:g+1};
+        b[z] = {type:"portal", name:"Портал", glyph:"⊛", pair:a, gate:g+1};
+      }
+      if(gates.length % 2){ take--; }
+    }
+  }
+  if(modes.casino){
+    var c = next();
+    if(c >= 0) b[c] = {type:"casino", name:"Казино", glyph:"♣", bet:100};
+  }
+  if(modes.swap){
+    var w = next();
+    if(w >= 0) b[w] = {type:"swap", name:"Рокировка", glyph:"⇄"};
+  }
+}
+function r5(x){ return Math.round(x/5)*5; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function cellPos(i, L){
+  var S = L+2;
+  if(i === 0)        return {r:S, c:S};
+  if(i < L+1)        return {r:S, c:S-i};
+  if(i === L+1)      return {r:S, c:1};
+  if(i < 2*L+2)      return {r:S-(i-(L+1)), c:1};
+  if(i === 2*L+2)    return {r:1, c:1};
+  if(i < 3*L+3)      return {r:1, c:1+(i-(2*L+2))};
+  if(i === 3*L+3)    return {r:1, c:S};
+  return {r:1+(i-(3*L+3)), c:S};
+}
+
+/* ======================= cards ======================= */
+var CHANCE = [
+  {t:"Отправляйтесь на Старт и получите жалование.", f:function(p){ return walkTo(p, 0, true); }},
+  {t:"Ближайший транспортный узел: платите двойную таксу или выкупайте.", f:function(p){ st.rentX = 2; return nearest(p,"transport"); }},
+  {t:"Ближайшая коммунальная станция: аренда — десять сумм на кубиках.", f:function(p){ st.utilX = 10; return nearest(p,"utility"); }},
+  {t:"Вас препровождают в изолятор. Без прохода через Старт.", f:function(p){ toJail(p); }},
+  {t:"Освобождение из изолятора. Сохраните карту до нужного случая.", f:function(p){ p.outCards++; }},
+  {t:"Банк выплачивает дивиденды по вкладу.", f:function(p){ gain(p, 50); }},
+  {t:"Удачная продажа акций.", f:function(p){ gain(p, 150); }},
+  {t:"Штраф за превышение скорости.", f:function(p){ charge(p, 30, null); }},
+  {t:"Капитальный ремонт: 25 за каждый дом, 100 за отель.", f:function(p){ charge(p, repairs(p,25,100), null); }},
+  {t:"Вы возвращаетесь на три клетки назад.", f:function(p){ return walkBack(p, 3); }},
+  {t:"Выигрыш в городской лотерее.", f:function(p){ gain(p, 100); }},
+  {t:"Вы председатель совета: каждый игрок платит вам 25.", f:function(p){ collectAll(p, 25); }}
+];
+var CHEST = [
+  {t:"Возврат переплаченного налога.", f:function(p){ gain(p, 20); }},
+  {t:"Наследство от дальнего родственника.", f:function(p){ gain(p, 100); }},
+  {t:"Ошибка банка в вашу пользу.", f:function(p){ gain(p, 200); }},
+  {t:"Счёт от врача.", f:function(p){ charge(p, 50, null); }},
+  {t:"Проценты по облигациям.", f:function(p){ gain(p, 50); }},
+  {t:"Штраф за парковку в неположенном месте.", f:function(p){ charge(p, 15, null); }},
+  {t:"У вас день рождения: каждый игрок дарит по 10.", f:function(p){ collectAll(p, 10); }},
+  {t:"Плата за обучение.", f:function(p){ charge(p, 50, null); }},
+  {t:"Вас препровождают в изолятор. Без прохода через Старт.", f:function(p){ toJail(p); }},
+  {t:"Освобождение из изолятора. Сохраните карту до нужного случая.", f:function(p){ p.outCards++; }},
+  {t:"Страховая выплата после наводнения.", f:function(p){ gain(p, 100); }},
+  {t:"Счёт из больницы.", f:function(p){ charge(p, 100, null); }},
+  {t:"Продажа старой коллекции с аукциона.", f:function(p){ gain(p, 75); }},
+  {t:"Взнос в городской фонд.", f:function(p){ charge(p, 40, null); }}
+];
+
+/* ======================= state ======================= */
+var SAVE_KEY = "grandtour.save.v1";
+var st = null;
+var setupCfg = { n:4, names:[], bots:[], modes:{portal:true, jackpot:true, casino:true, swap:true} };
+var MODE_INFO = [
+  {k:"portal",  t:"Порталы",             d:"Пара телепортов: попал в один — вышел из другого, минуя всё между ними.", g:"⊛"},
+  {k:"casino",  t:"Казино",              d:"Ставка 100: кубик 6 — тройная выплата, 4–5 возврат, 1–3 банк забирает.", g:"♣"},
+  {k:"swap",    t:"Рокировка",           d:"Меняетесь местами с ближайшим игроком впереди.", g:"⇄"},
+  {k:"jackpot", t:"Джекпот на стоянке",  d:"Налоги, штрафы и проигрыши копятся на Стоянке — забирает тот, кто на неё встанет.", g:"Ⓟ"}
+];
+var el = {};
+var tileEls = [], tokEls = {}, boardEl = null, feltEl = null, tokLayer = null;
+var selTile = null, botTimer = null, animTimer = null, cellPx = 40, gen = 0;
+
+function ids(){
+  ["setup","game","board","actions","players","assets","log","detail","plist","countRow",
+   "growth","mini","miniEcho","cntEcho","startBtn","resumeBtn","boardEcho","assetsEcho",
+   "mastActions","overBox","brandSub","modes","trade","tradeBox","tabs","localPane",
+   "onlinePane","netnote","netState","meName","meCode","copyCode","friends","frCount",
+   "frCode","frAdd","roomBody","roomEcho","chatPanel","chatList","chatInput","chatSend",
+   "chatEcho","toast","below","dock","barHome","pPlayers","pAssets","pLog","packs","packEcho","packName",
+   "packFiles","packExport","packImport"].forEach(function(k){ el[k] = document.getElementById(k); });
+}
+
+/* ======================= setup screen ======================= */
+function renderSetup(){
+  el.countRow.innerHTML = "";
+  for(var n=2; n<=8; n++){
+    (function(n){
+      var b = document.createElement("button");
+      b.className = "cbtn"; b.textContent = n; b.type = "button";
+      b.setAttribute("aria-pressed", setupCfg.n === n ? "true" : "false");
+      b.setAttribute("aria-label", n + " игроков");
+      b.onclick = function(){ setupCfg.n = n; renderSetup(); };
+      el.countRow.appendChild(b);
+    })(n);
+  }
+  el.cntEcho.textContent = setupCfg.n;
+
+  var L = sideLen(setupCfg.n), N = 4*L+4;
+  var probe = buildBoard(setupCfg.n, setupCfg.modes);
+  var props = 0, cards = 0, duos = 0, seen = {};
+  probe.forEach(function(s){
+    if(s.type === "prop"){
+      props++;
+      if(!seen[s.group]){ seen[s.group] = 1; if(s.groupSize === 2) duos++; }
+    }
+    if(s.type === "chance" || s.type === "chest") cards++;
+  });
+  el.growth.innerHTML =
+    stat(N, "клеток") + stat(props, "участков") + stat(probe.meta.groups, "групп") +
+    stat(duos, "групп по 2") + stat(cards, "карточек") + stat("+" + (N - 40), "к базовым 40");
+  el.miniEcho.textContent = N + " клеток";
+
+  // modes
+  el.modes.innerHTML = "";
+  MODE_INFO.forEach(function(m){
+    var on = !!setupCfg.modes[m.k];
+    var row = document.createElement("button");
+    row.type = "button"; row.className = "moderow"; row.setAttribute("aria-pressed", on ? "true" : "false");
+    row.innerHTML = '<span class="mg">' + m.g + '</span>' +
+      '<span class="mt"><b>' + m.t + '</b><i>' + m.d + '</i></span>' +
+      '<span class="mtog">' + (on ? "вкл" : "выкл") + '</span>';
+    row.onclick = function(){
+      setupCfg.modes[m.k] = !setupCfg.modes[m.k];
+      renderSetup();
+      if(net.on && net.isHost && net.phase === "lobby") setRoomModes();
+    };
+    el.modes.appendChild(row);
+  });
+
+  // mini board preview
+  var S = L+2;
+  el.mini.style.gridTemplate = "repeat(" + S + ",1fr)/repeat(" + S + ",1fr)";
+  el.mini.innerHTML = "";
+  var grid = [];
+  for(var i=0;i<probe.length;i++){
+    var p = cellPos(i, L);
+    grid[(p.r-1)*S + (p.c-1)] = probe[i];
+  }
+  for(var q=0;q<S*S;q++){
+    var cell = document.createElement("i");
+    var sp = grid[q];
+    if(!sp){ cell.className = "mid"; }
+    else if(sp.type === "prop"){ cell.style.background = (sp.color || GCOL[sp.group % GCOL.length]); }
+    else if(isMode(sp)){ cell.className = "md"; cell.textContent = sp.glyph; }
+    else if(isCorner(sp)){ cell.className = "c"; }
+    else { cell.className = "s"; }
+    el.mini.appendChild(cell);
+  }
+
+  // players
+  el.plist.innerHTML = "";
+  for(var j=0;j<setupCfg.n;j++){
+    (function(j){
+      var row = document.createElement("div");
+      row.className = "prow";
+      var sw = document.createElement("div");
+      sw.className = "swatch"; sw.style.background = PCOL[j]; sw.textContent = PTOK[j];
+      var inp = document.createElement("input");
+      inp.type = "text"; inp.maxLength = 14;
+      inp.value = setupCfg.names[j] || ("Игрок " + (j+1));
+      inp.setAttribute("aria-label", "Имя игрока " + (j+1));
+      inp.oninput = function(){ setupCfg.names[j] = inp.value; };
+      var seg = document.createElement("div");
+      seg.className = "seg";
+      ["Человек","Бот"].forEach(function(lab, k){
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = lab;
+        var isBot = !!setupCfg.bots[j];
+        b.setAttribute("aria-pressed", (k === 1) === isBot ? "true" : "false");
+        b.onclick = function(){ setupCfg.bots[j] = (k === 1); renderSetup(); };
+        seg.appendChild(b);
+      });
+      row.appendChild(sw); row.appendChild(inp); row.appendChild(seg);
+      el.plist.appendChild(row);
+    })(j);
+  }
+  renderPacks();
+  el.resumeBtn.hidden = !hasSave();
+}
+function stat(v, l){ return '<div class="stat"><b>' + v + '</b><span>' + l + '</span></div>'; }
+
+/* ======================= game start ======================= */
+function stopTimers(){
+  clearTimeout(botTimer); botTimer = null;
+  clearInterval(animTimer); animTimer = null;
+  gen++;  // invalidates callbacks scheduled by the previous partie
+}
+function newGame(seats){
+  stopTimers();
+  var online = !!(seats && seats.length);
+  var n = online ? seats.length : setupCfg.n;
+  var modes = clone(online ? (net.modes || {}) : setupCfg.modes);
+  var board = buildBoard(n, modes);
+  var players = [];
+  for(var i=0;i<n;i++){
+    var seat = online ? seats[i] : null;
+    players.push({
+      id:i,
+      name:((seat ? seat.name : setupCfg.names[i]) || ("Игрок " + (i+1))).slice(0,14) || ("Игрок " + (i+1)),
+      color:PCOL[i], tok:PTOK[i],
+      bot: seat ? !!seat.bot : !!setupCfg.bots[i],
+      owner: seat ? (seat.owner || null) : null,
+      cash:1500 + (n-2)*150, pos:0, jail:false, jailTurns:0, outCards:0, alive:true
+    });
+  }
+  st = {
+    board:board, players:players, turn:0, dice:[1,1], doubles:0,
+    mustRoll:true, pending:null, debt:null, busy:false, over:false,
+    chance:shuffle(range(CHANCE.length)), chest:shuffle(range(CHEST.length)),
+    log:[], msg:"", card:null, rentX:1, utilX:0, salary:200,
+    modes:modes, pot:0, pacts:[], trade:null, online:online,
+    pack:(online ? (net.pack || packId) : packId)
+  };
+  logIt("Партия началась: " + n + " игроков, " + board.meta.N + " клеток, стартовый капитал " + money(players[0].cash) + ".");
+  el.setup.hidden = true; el.game.hidden = false;
+  mountBoard();
+  render();
+  save();
+  maybeBot();
+}
+function range(n){ var a=[]; for(var i=0;i<n;i++) a.push(i); return a; }
+function shuffle(a){
+  for(var i=a.length-1;i>0;i--){ var j = Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+
+/* ======================= board mount ======================= */
+function sideOf(i, L){
+  if(i === 0 || i === L+1 || i === 2*L+2 || i === 3*L+3) return -1;
+  if(i < L+1)   return 0;   // низ
+  if(i < 2*L+2) return 1;   // лево
+  if(i < 3*L+3) return 2;   // верх
+  return 3;                 // право
+}
+var STRIP_BG = {
+  tax:"#A6392C", transport:"#33443C", utility:"#33443C", chance:"#3D9A4E",
+  chest:"#0E8A6E", portal:"#7E57C2", casino:"#C9382E", swap:"#17654A"
+};
+function parkNodes(){
+  if(!el.dock) return;
+  [el.actions, el.chatPanel, el.pPlayers].forEach(function(n){ if(n) el.dock.appendChild(n); });
+}
+function mountBoard(){
+  var L = st.board.meta.L, S = L+2;
+  boardEl = el.board;
+  parkNodes();
+  boardEl.innerHTML = "";
+  boardEl.style.gridTemplate = "repeat(" + S + ",1fr)/repeat(" + S + ",1fr)";
+  tileEls = [];
+
+  for(var i=0;i<st.board.length;i++){
+    var sp = st.board[i], pos = cellPos(i, L), side = sideOf(i, L);
+    var d = document.createElement("div");
+    d.className = "tile " + sp.type + (isCorner(sp) ? " corner" : "") +
+                  (isSpecial(sp) ? " special" : "") + (side >= 0 ? " s" + side : "");
+    d.style.gridArea = pos.r + "/" + pos.c + "/" + (pos.r+1) + "/" + (pos.c+1);
+    if((sp.name || "").length > 12) d.classList.add("longnm");
+    d.dataset.i = i;
+    d.setAttribute("role", "button"); d.setAttribute("tabindex", "-1");
+    d.title = (sp.groupName ? sp.groupName + " · " : "") + sp.name +
+              (sp.price ? " · " + money(sp.price) : "");
+
+    if(side >= 0){
+      var strip = document.createElement("div");
+      strip.className = "strip";
+      strip.textContent = sp.price ? sp.price :
+        (sp.type === "tax" ? "−" + sp.amount : (sp.type === "casino" ? "±" + sp.bet : ""));
+      strip.style.background = (sp.type === "prop")
+        ? (sp.color || "#8C968F") : (STRIP_BG[sp.type] || "#8C968F");
+      if(sp.type === "parking") strip.className = "strip pot";
+      d.appendChild(strip);
+    }
+    var art = document.createElement("div"); art.className = "art";
+    art.innerHTML = tileArt(sp);
+    var own = document.createElement("div"); own.className = "own";
+    var hs = document.createElement("div"); hs.className = "hs";
+    d.appendChild(art); d.appendChild(own); d.appendChild(hs);
+    (function(i){ d.onclick = function(){ selTile = (selTile === i ? null : i); renderDetail(); paintTiles(); }; })(i);
+    boardEl.appendChild(d);
+    tileEls.push(d);
+  }
+
+  feltEl = document.createElement("div");
+  feltEl.className = "felt";
+  feltEl.style.gridArea = "2/2/" + (2+L) + "/" + (2+L);
+  feltEl.innerHTML = '<div class="fseats" id="fseats"></div>' +
+                     '<div class="fmid" id="fmid"><div class="finfo" id="finfo"></div></div>' +
+                     '<div class="fchat" id="fchat"></div>';
+  boardEl.appendChild(feltEl);
+
+  tokLayer = document.createElement("div");
+  tokLayer.className = "toks";
+  boardEl.appendChild(tokLayer);
+  tokEls = {};
+  st.players.forEach(function(p){
+    var t = document.createElement("div");
+    t.className = "tok"; t.style.background = p.color; t.textContent = p.tok;
+    t.title = p.name;
+    tokLayer.appendChild(t);
+    tokEls[p.id] = t;
+  });
+
+  measure();
+  layoutPanels(true);
+  if(window.ResizeObserver){
+    if(mountBoard._ro) mountBoard._ro.disconnect();
+    mountBoard._ro = new ResizeObserver(function(){ measure(); layoutPanels(false); });
+    mountBoard._ro.observe(boardEl);
+  } else {
+    window.addEventListener("resize", function(){ measure(); layoutPanels(false); });
+  }
+}
+
+/* игроки, кнопки и чат живут внутри поля, пока оно достаточно большое */
+var wideNow = null;
+function layoutPanels(force){
+  if(!boardEl || !el.below) return;
+  var wide = boardEl.clientWidth >= 720;
+  if(!force && wide === wideNow) return;
+  wideNow = wide;
+  var seats = boardEl.querySelector("#fseats"),
+      mid   = boardEl.querySelector("#fmid"),
+      fchat = boardEl.querySelector("#fchat");
+  if(wide && seats && mid && fchat){
+    seats.appendChild(el.pPlayers);
+    mid.appendChild(el.actions);
+    fchat.appendChild(el.chatPanel);
+  } else {
+    el.barHome.appendChild(el.actions);
+    el.below.appendChild(el.pPlayers);
+    el.below.appendChild(el.chatPanel);
+  }
+  [el.pAssets, el.detail, el.pLog].forEach(function(n){ if(n) el.below.appendChild(n); });
+  if(feltEl) feltEl.classList.toggle("solo", !wide);
+}
+function isCorner(sp){ return sp.type==="go"||sp.type==="jail"||sp.type==="parking"||sp.type==="gotojail"; }
+function isSpecial(sp){
+  return sp.type==="chance"||sp.type==="chest"||sp.type==="tax"||sp.type==="transport"||
+         sp.type==="utility"||sp.type==="portal"||sp.type==="casino"||sp.type==="swap";
+}
+function isMode(sp){ return sp.type==="portal"||sp.type==="casino"||sp.type==="swap"; }
+function measure(){
+  if(!boardEl || !st) return;
+  var S = st.board.meta.L + 2;
+  cellPx = boardEl.clientWidth / S;
+  boardEl.style.setProperty("--cell", cellPx + "px");
+  boardEl.classList.toggle("compact", cellPx < 62);
+  boardEl.classList.toggle("tiny", cellPx < 42);
+  renderTokens();
+}
+
+/* ======================= helpers ======================= */
+function P(id){ return st.players[id]; }
+function cur(){ return st.players[st.turn]; }
+function money(v){ return Math.round(v).toLocaleString("ru-RU") + " " + CUR; }
+function alive(){ return st.players.filter(function(p){ return p.alive; }); }
+function groupSpaces(g){ return st.board.filter(function(s){ return s.type === "prop" && s.group === g; }); }
+function ownsGroup(pid, g){
+  var gs = groupSpaces(g);
+  return gs.length > 0 && gs.every(function(s){ return s.owner === pid; });
+}
+function countType(pid, type){
+  return st.board.filter(function(s){ return s.type === type && s.owner === pid; }).length;
+}
+function myProps(pid){ return st.board.filter(function(s){ return s.owner === pid; }); }
+function worth(p){
+  var w = p.cash;
+  myProps(p.id).forEach(function(s){
+    w += s.mortgaged ? Math.round(s.price/2) : s.price;
+    if(s.houses) w += (s.houses === 5 ? 5 : s.houses) * (s.houseCost || 0);
+  });
+  return w;
+}
+function repairs(p, perHouse, perHotel){
+  var sum = 0;
+  myProps(p.id).forEach(function(s){
+    if(s.houses === 5) sum += perHotel;
+    else sum += s.houses * perHouse;
+  });
+  return sum;
+}
+function logIt(html){
+  st.log.unshift(html);
+  if(st.log.length > 60) st.log.pop();
+}
+function nm(p){ return '<b>' + escape_(p.name) + '</b>'; }
+function escape_(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]; }); }
+function mAmt(v){ return '<span class="m">' + money(v) + '</span>'; }
+function nAmt(v){ return '<span class="neg">' + money(v) + '</span>'; }
+
+/* ======================= money ======================= */
+function gain(p, amount){ p.cash += amount; }
+function charge(p, amount, to){
+  if(amount <= 0) return;
+  var now = Math.min(p.cash, amount);
+  if(now > 0){
+    p.cash -= now;
+    if(to) to.cash += now;
+    else if(st.modes && st.modes.jackpot) st.pot += now;  // всё в пользу банка копится на Стоянке
+  }
+  var owed = amount - now;
+  if(owed > 0){
+    st.debt = { pid:p.id, to: to ? to.id : null, owed:owed };
+    logIt(nm(p) + " не хватает " + nAmt(owed) + " — нужно продать дома или заложить участки.");
+  }
+}
+function settleDebt(){
+  var d = st.debt; if(!d) return;
+  var p = P(d.pid), to = (d.to != null) ? P(d.to) : null;
+  var now = Math.min(p.cash, d.owed);
+  if(now > 0){
+    p.cash -= now; d.owed -= now;
+    if(to) to.cash += now;
+    else if(st.modes && st.modes.jackpot) st.pot += now;
+  }
+  if(d.owed <= 0){
+    st.debt = null;
+    logIt(nm(p) + " закрыл долг.");
+  }
+}
+function collectAll(p, each){
+  st.players.forEach(function(o){
+    if(o.alive && o.id !== p.id) charge(o, each, p);
+  });
+}
+
+/* ======================= pacts (аренду не берём) ======================= */
+function pactBetween(ownerId, guestId){
+  if(!st.pacts) return null;
+  for(var i=0;i<st.pacts.length;i++){
+    var k = st.pacts[i];
+    if(k.owner === ownerId && k.guest === guestId && k.left > 0) return k;
+  }
+  return null;
+}
+function addPact(ownerId, guestId, turns){
+  var ex = pactBetween(ownerId, guestId);
+  if(ex){ ex.left = Math.max(ex.left, turns); return; }
+  st.pacts.push({owner:ownerId, guest:guestId, left:turns});
+}
+function tickPacts(){
+  if(!st.pacts) return;
+  st.pacts.forEach(function(k){ k.left--; });
+  st.pacts = st.pacts.filter(function(k){
+    if(k.left > 0) return true;
+    logIt("Соглашение " + nm(P(k.owner)) + " и " + nm(P(k.guest)) + " истекло — аренда снова в силе.");
+    return false;
+  });
+}
+function dropPacts(pid){
+  if(!st.pacts) return;
+  st.pacts = st.pacts.filter(function(k){ return k.owner !== pid && k.guest !== pid; });
+}
+function rounds(turns){ return Math.max(1, Math.round(turns / Math.max(1, alive().length))); }
+
+/* ======================= rent ======================= */
+function rentOf(sp, roll){
+  if(sp.mortgaged || sp.owner == null) return 0;
+  if(sp.type === "prop"){
+    if(sp.houses > 0) return sp.rents[sp.houses];
+    return sp.rents[0] * (ownsGroup(sp.owner, sp.group) ? 2 : 1);
+  }
+  if(sp.type === "transport"){
+    var k = countType(sp.owner, "transport");
+    return 25 * Math.pow(2, Math.max(0, k-1));
+  }
+  if(sp.type === "utility"){
+    var u = countType(sp.owner, "utility");
+    var mult = st.utilX ? st.utilX : (u >= 2 ? 10 : 4);
+    return mult * roll;
+  }
+  return 0;
+}
+
+/* ======================= turn flow ======================= */
+function rollDice(){
+  if(st.busy || !st.mustRoll || st.debt || st.over) return;
+  if(!canAct()) return;
+  var p = cur(), g = gen;
+  st.busy = true; st.card = null;
+  var d1 = 1 + Math.floor(Math.random()*6), d2 = 1 + Math.floor(Math.random()*6);
+  renderFelt(true);
+  setTimeout(function(){
+    if(g !== gen) return;
+    st.dice = [d1, d2];
+    var dbl = d1 === d2, sum = d1 + d2;
+    st.msg = "Кубики: " + d1 + " и " + d2 + (dbl ? " — дубль!" : "");
+    renderFelt(false);
+
+    if(p.jail){
+      if(dbl){
+        p.jail = false; p.jailTurns = 0; st.doubles = 0; st.mustRoll = false;
+        logIt(nm(p) + " выбросил дубль и выходит из изолятора.");
+        step(p, sum);
+      } else {
+        p.jailTurns++;
+        if(p.jailTurns >= 3){
+          logIt(nm(p) + " сидит третий ход — платит " + nAmt(50) + " и выходит.");
+          charge(p, 50, null);
+          p.jail = false; p.jailTurns = 0; st.mustRoll = false;
+          step(p, sum);
+        } else {
+          logIt(nm(p) + " остаётся в изоляторе (попытка " + p.jailTurns + " из 3).");
+          st.mustRoll = false; st.busy = false; render(); save(); maybeBot();
+        }
+      }
+      return;
+    }
+
+    if(dbl){
+      st.doubles++;
+      if(st.doubles >= 3){
+        logIt(nm(p) + " выбросил три дубля подряд — изолятор.");
+        toJail(p); st.mustRoll = false; st.doubles = 0;
+        st.busy = false; render(); save(); endTurnSoon();
+        return;
+      }
+      st.mustRoll = true;
+    } else {
+      st.doubles = 0; st.mustRoll = false;
+    }
+    step(p, sum);
+  }, 620);
+}
+
+function step(p, sum){
+  st.busy = true;
+  walkSteps(p, sum, true, function(){ resolveLanding(p, sum, 0); });
+}
+
+/* animated movement, one cell per tick */
+function walkSteps(p, steps, salary, done, fast){
+  var N = st.board.meta.N, left = steps, g = gen;
+  var tick = fast ? Math.max(22, Math.min(70, Math.round(1000/steps)))
+                  : Math.max(70, 190 - steps*8);
+  clearInterval(animTimer);
+  animTimer = setInterval(function(){
+    if(g !== gen){ clearInterval(animTimer); animTimer = null; return; }
+    if(left <= 0){
+      clearInterval(animTimer); animTimer = null; done(); return;
+    }
+    p.pos = (p.pos + 1) % N;
+    if(p.pos === 0 && salary){
+      gain(p, st.salary);
+      logIt(nm(p) + " прошёл Старт: " + mAmt(st.salary) + ".");
+    }
+    left--;
+    renderTokens(); renderPlayers();
+  }, Math.max(70, 190 - steps*8));
+}
+function walkTo(p, target, salary){
+  var N = st.board.meta.N;
+  var steps = (target - p.pos + N) % N;
+  if(steps === 0) steps = N;
+  st.busy = true;
+  walkSteps(p, steps, salary, function(){ resolveLanding(p, st.dice[0]+st.dice[1], 1); });
+  return true;
+}
+function walkBack(p, k){
+  var N = st.board.meta.N, g = gen;
+  st.busy = true;
+  var left = k;
+  clearInterval(animTimer);
+  animTimer = setInterval(function(){
+    if(g !== gen){ clearInterval(animTimer); animTimer = null; return; }
+    if(left <= 0){
+      clearInterval(animTimer); animTimer = null;
+      resolveLanding(p, st.dice[0]+st.dice[1], 1); return;
+    }
+    p.pos = (p.pos - 1 + N) % N; left--;
+    renderTokens();
+  }, 130);
+  return true;
+}
+function nearest(p, type){
+  var N = st.board.meta.N;
+  for(var k=1;k<=N;k++){
+    var i = (p.pos + k) % N;
+    if(st.board[i].type === type) return walkTo(p, i, true);
+  }
+  return false;
+}
+function toJail(p){
+  var jailIdx = st.board.meta.L + 1;
+  p.pos = jailIdx; p.jail = true; p.jailTurns = 0; st.doubles = 0; st.mustRoll = false;
+  logIt(nm(p) + " отправляется в изолятор.");
+  renderTokens();
+}
+
+function resolveLanding(p, roll, depth){
+  var sp = st.board[p.pos];
+  st.rentX = st.rentX || 1;
+  switch(sp.type){
+    case "go":
+      logIt(nm(p) + " стоит на Старте.");
+      break;
+    case "jail":
+      logIt(nm(p) + " заглянул в изолятор как посетитель.");
+      break;
+    case "parking":
+      if(st.modes && st.modes.jackpot && st.pot > 0){
+        logIt(nm(p) + " забирает джекпот со стоянки: " + mAmt(st.pot) + "!");
+        st.msg = "Джекпот " + money(st.pot) + " — ваш.";
+        gain(p, st.pot); st.pot = 0;
+      } else {
+        logIt(nm(p) + " отдыхает на бесплатной стоянке.");
+      }
+      break;
+    case "gotojail":
+      toJail(p);
+      break;
+    case "tax":
+      logIt(nm(p) + " платит «" + sp.name + "»: " + nAmt(sp.amount) + ".");
+      charge(p, sp.amount, null);
+      break;
+    case "chance":
+    case "chest":
+      if(depth > 2) break;
+      return drawCard(sp.type, p, depth);
+    case "portal":
+      if(depth > 0){
+        logIt(nm(p) + " стоит у портала — второй прыжок за ход не работает.");
+        break;
+      }
+      var dest = st.board[sp.pair];
+      logIt(nm(p) + " входит в портал и выходит на клетке " + sp.pair + ".");
+      p.pos = sp.pair;
+      st.msg = "Портал: прыжок на «" + (dest.groupName ? dest.groupName + " · " : "") + dest.name + "».";
+      renderTokens();
+      return resolveLanding(p, roll, depth + 1);
+    case "casino":
+      st.pending = { type:"casino", i:p.pos, bet:sp.bet };
+      st.msg = "Казино: ставка " + money(sp.bet) + ". Кубик 6 — тройная выплата, 4–5 — возврат, 1–3 — банк забирает.";
+      break;
+    case "swap":
+      var mate = nextPlayerAhead(p);
+      if(!mate){
+        logIt(nm(p) + " на рокировке, но меняться не с кем.");
+      } else {
+        var mp = p.pos; p.pos = mate.pos; mate.pos = mp;
+        logIt(nm(p) + " делает рокировку с " + nm(mate) + " — игроки поменялись клетками.");
+        st.msg = "Рокировка с " + mate.name + ".";
+        renderTokens();
+        return resolveLanding(p, roll, depth + 1);
+      }
+      break;
+    case "prop":
+    case "transport":
+    case "utility":
+      if(sp.owner == null){
+        st.pending = { type:"buy", i:p.pos };
+        st.msg = sp.name + " свободен. Цена " + money(sp.price) + ".";
+      } else if(sp.owner === p.id){
+        logIt(nm(p) + " на своём участке «" + escape_(sp.name) + "».");
+      } else if(sp.mortgaged){
+        logIt("«" + escape_(sp.name) + "» в залоге — аренда не берётся.");
+      } else if(pactBetween(sp.owner, p.id)){
+        var pk = pactBetween(sp.owner, p.id);
+        logIt("Соглашение с " + nm(P(sp.owner)) + ": " + nm(p) + " не платит за «" + escape_(sp.name) +
+              "» (осталось ходов: " + pk.left + ").");
+        st.msg = "Действует соглашение — аренда не взимается.";
+      } else {
+        var owner = P(sp.owner);
+        var r = rentOf(sp, roll) * (st.rentX || 1);
+        logIt(nm(p) + " платит " + nm(owner) + " аренду " + nAmt(r) + " за «" + escape_(sp.name) + "».");
+        charge(p, r, owner);
+      }
+      break;
+  }
+  st.rentX = 1; st.utilX = 0;
+  finishLanding();
+}
+
+function drawCard(kind, p, depth){
+  var deckIds = (kind === "chance") ? st.chance : st.chest;
+  var list = (kind === "chance") ? CHANCE : CHEST;
+  if(!deckIds.length) deckIds.push.apply(deckIds, shuffle(range(list.length)));
+  var id = deckIds.shift(); deckIds.push(id);
+  var card = list[id];
+  st.card = { kind:kind, t:card.t };
+  logIt((kind === "chance" ? "Шанс" : "Казна") + " для " + nm(p) + ": " + escape_(card.t));
+  var chained = card.f(p) === true;
+  st.rentX = st.rentX || 1;
+  if(!chained){ st.rentX = 1; st.utilX = 0; finishLanding(); }
+  else { render(); }
+}
+
+function finishLanding(){
+  st.busy = false;
+  render(); save();
+  if(st.debt){ maybeBot(); return; }
+  if(!st.mustRoll && !st.pending) endTurnSoon();
+  else maybeBot();
+}
+function endTurnSoon(){
+  // human decides; bots continue on their own
+  maybeBot();
+}
+
+function nextPlayerAhead(p){
+  var N = st.board.meta.N;
+  for(var k=1;k<=N;k++){
+    var at = (p.pos + k) % N;
+    for(var j=0;j<st.players.length;j++){
+      var o = st.players[j];
+      if(o.alive && o.id !== p.id && !o.jail && o.pos === at) return o;
+    }
+  }
+  return null;
+}
+
+/* ---- казино ---- */
+function casinoBet(){
+  if(!st.pending || st.pending.type !== "casino" || st.busy) return;
+  if(!canAct()) return;
+  var p = cur(), bet = st.pending.bet;
+  if(p.cash < bet) return;
+  var d = 1 + Math.floor(Math.random()*6);
+  st.dice = [d, d];
+  st.pending = null;
+  if(d === 6){
+    gain(p, bet*2);
+    logIt("Казино, кубик 6: " + nm(p) + " забирает " + mAmt(bet*3) + " (ставка " + money(bet) + " ×3).");
+    st.msg = "Кубик 6 — тройная выплата!";
+  } else if(d >= 4){
+    logIt("Казино, кубик " + d + ": ставка " + nm(p) + " возвращается.");
+    st.msg = "Кубик " + d + " — ставка возвращается.";
+  } else {
+    charge(p, bet, null);
+    logIt("Казино, кубик " + d + ": " + nm(p) + " теряет " + nAmt(bet) + ".");
+    st.msg = "Кубик " + d + " — банк забирает ставку.";
+  }
+  render(); save(); maybeBot();
+}
+function casinoSkip(){
+  if(!st.pending || st.pending.type !== "casino") return;
+  logIt(nm(cur()) + " проходит мимо казино.");
+  st.pending = null; st.msg = "";
+  render(); save(); maybeBot();
+}
+
+function buy(){
+  if(!st.pending || st.pending.type !== "buy" || st.busy) return;
+  if(!canAct()) return;
+  var p = cur(), sp = st.board[st.pending.i];
+  if(p.cash < sp.price) return;
+  p.cash -= sp.price; sp.owner = p.id;
+  logIt(nm(p) + " покупает «" + escape_(sp.name) + "» за " + nAmt(sp.price) + ".");
+  st.pending = null; st.msg = "";
+  render(); save(); maybeBot();
+}
+function skipBuy(){
+  if(!st.pending || st.busy) return;
+  if(!canAct()) return;
+  if(st.pending.type === "casino"){ casinoSkip(); return; }
+  var sp = st.board[st.pending.i];
+  logIt(nm(cur()) + " отказался от «" + escape_(sp.name) + "» — участок остаётся у банка.");
+  st.pending = null; st.msg = "";
+  render(); save(); maybeBot();
+}
+function payJail(){
+  if(!canAct()) return;
+  var p = cur();
+  if(!p.jail || st.busy || st.debt) return;
+  charge(p, 50, null);
+  if(!st.debt){ p.jail = false; p.jailTurns = 0; logIt(nm(p) + " заплатил " + nAmt(50) + " и вышел из изолятора."); }
+  render(); save(); maybeBot();
+}
+function useCard(){
+  if(!canAct()) return;
+  var p = cur();
+  if(!p.jail || p.outCards < 1 || st.busy) return;
+  p.outCards--; p.jail = false; p.jailTurns = 0;
+  logIt(nm(p) + " предъявил карту освобождения.");
+  render(); save(); maybeBot();
+}
+function endTurn(){
+  if(st.busy || st.mustRoll || st.debt || st.over) return;
+  if(!canAct()) return;
+  if(st.pending){ skipBuy(); }
+  st.pending = null; st.card = null; st.msg = ""; st.doubles = 0; st.trade = null;
+  st.tradeTried = false;
+  tickPacts();
+  var guard = 0;
+  do {
+    st.turn = (st.turn + 1) % st.players.length;
+    guard++;
+  } while(!st.players[st.turn].alive && guard < 40);
+  st.mustRoll = true;
+  logIt("Ход переходит к " + nm(cur()) + ".");
+  render(); save(); maybeBot();
+}
+
+/* ======================= build / mortgage ======================= */
+function canBuild(sp){
+  var p = cur();
+  if(!sp || sp.type !== "prop" || sp.owner !== p.id || sp.mortgaged) return false;
+  if(!ownsGroup(p.id, sp.group)) return false;
+  var gs = groupSpaces(sp.group);
+  if(gs.some(function(s){ return s.mortgaged; })) return false;
+  if(sp.houses >= 5) return false;
+  var min = Math.min.apply(null, gs.map(function(s){ return s.houses; }));
+  return sp.houses === min && p.cash >= sp.houseCost;
+}
+function build(i){
+  var sp = st.board[i];
+  if(!canBuild(sp) || st.busy) return;
+  var p = cur();
+  p.cash -= sp.houseCost; sp.houses++;
+  logIt(nm(p) + (sp.houses === 5 ? " ставит отель на «" : " строит дом на «") + escape_(sp.name) + "» за " + nAmt(sp.houseCost) + ".");
+  render(); save();
+}
+function canSell(sp){
+  var p = cur();
+  if(!sp || sp.type !== "prop" || sp.owner !== p.id || sp.houses <= 0) return false;
+  var gs = groupSpaces(sp.group);
+  var max = Math.max.apply(null, gs.map(function(s){ return s.houses; }));
+  return sp.houses === max;
+}
+function sellHouse(i){
+  var sp = st.board[i];
+  if(!canSell(sp) || st.busy) return;
+  var p = cur(), back = Math.round(sp.houseCost/2);
+  sp.houses--; p.cash += back;
+  logIt(nm(p) + " продаёт постройку на «" + escape_(sp.name) + "» за " + mAmt(back) + ".");
+  settleDebt(); render(); save(); maybeBot();
+}
+function canMortgage(sp){
+  var p = cur();
+  if(!sp || sp.owner !== p.id || sp.mortgaged) return false;
+  if(sp.type === "prop"){
+    var gs = groupSpaces(sp.group);
+    if(gs.some(function(s){ return s.houses > 0; })) return false;
+  }
+  return true;
+}
+function mortgage(i){
+  var sp = st.board[i];
+  if(!canMortgage(sp) || st.busy) return;
+  var p = cur(), sum = Math.round(sp.price/2);
+  sp.mortgaged = true; p.cash += sum;
+  logIt(nm(p) + " закладывает «" + escape_(sp.name) + "» за " + mAmt(sum) + ".");
+  settleDebt(); render(); save(); maybeBot();
+}
+function unmortgage(i){
+  var sp = st.board[i], p = cur();
+  var cost = Math.round(sp.price * 0.55);
+  if(!sp.mortgaged || sp.owner !== p.id || p.cash < cost || st.busy || st.debt) return;
+  sp.mortgaged = false; p.cash -= cost;
+  logIt(nm(p) + " выкупает «" + escape_(sp.name) + "» из залога за " + nAmt(cost) + ".");
+  render(); save();
+}
+
+/* ======================= сделки ======================= */
+function tradable(sp){
+  // дома нужно сначала продать: с постройками участок не передаётся
+  if(sp.type === "prop"){
+    return !groupSpaces(sp.group).some(function(s){ return s.houses > 0; });
+  }
+  return true;
+}
+function openTrade(){
+  if(st.busy || st.over || st.debt) return;
+  if(!canAct()) return;
+  var me = cur();
+  var others = st.players.filter(function(o){ return o.alive && o.id !== me.id; });
+  if(!others.length) return;
+  st.trade = {
+    phase:"compose", from:me.id, to:others[0].id,
+    give:[], get:[], cashGive:0, cashGet:0, pactGive:false, pactGet:false, pactRounds:2,
+    verdict:null
+  };
+  renderTrade();
+}
+function closeTrade(){ st.trade = null; renderTrade(); render(); }
+
+function tradeSummary(t){
+  var A = P(t.from), B = P(t.to);
+  var give = t.give.map(function(i){ return "«" + escape_(st.board[i].name) + "»"; }).join(", ");
+  var get  = t.get.map(function(i){ return "«" + escape_(st.board[i].name) + "»"; }).join(", ");
+  var s = [];
+  if(give) s.push(nm(A) + " отдаёт " + give);
+  if(t.cashGive) s.push(nm(A) + " доплачивает " + nAmt(t.cashGive));
+  if(get) s.push(nm(B) + " отдаёт " + get);
+  if(t.cashGet) s.push(nm(B) + " доплачивает " + nAmt(t.cashGet));
+  if(t.pactGive) s.push(nm(A) + " не берёт аренду " + t.pactRounds + " кр.");
+  if(t.pactGet) s.push(nm(B) + " не берёт аренду " + t.pactRounds + " кр.");
+  return s.length ? s.join("; ") : "пустое предложение";
+}
+function tradeValid(t){
+  var A = P(t.from), B = P(t.to);
+  if(t.cashGive > A.cash || t.cashGet > B.cash) return false;
+  if(!t.give.length && !t.get.length && !t.cashGive && !t.cashGet && !t.pactGive && !t.pactGet) return false;
+  return true;
+}
+function sendTrade(){
+  var t = st.trade;
+  if(!t || t.phase !== "compose" || !tradeValid(t)) return;
+  var B = P(t.to);
+  logIt(nm(P(t.from)) + " предлагает сделку " + nm(B) + ": " + tradeSummary(t));
+  if(B.bot){
+    var v = botTradeValue(t);
+    t.phase = "verdict";
+    t.verdict = (v.ok ? "принял" : "отказал") + ": " + v.why;
+    if(v.ok) applyTrade(t); else logIt(nm(B) + " отказывается от сделки (" + v.why + ").");
+    render(); renderTrade(); save();
+  } else {
+    t.phase = "offer";  // передайте устройство партнёру
+    renderTrade();
+  }
+}
+function acceptTrade(){
+  var t = st.trade;
+  if(!t || t.phase !== "offer") return;
+  if(st.online && !isMineSeat(t.to)) return;
+  if(!tradeValid(t)){ logIt("Сделка сорвалась: у кого-то не хватает денег."); }
+  else applyTrade(t);
+  st.trade = null;
+  render(); renderTrade(); save(); maybeBot();
+}
+function declineTrade(){
+  var t = st.trade;
+  if(!t) return;
+  logIt(nm(P(t.to)) + " отказывается от сделки.");
+  st.trade = null;
+  render(); renderTrade(); save(); maybeBot();
+}
+function applyTrade(t){
+  var A = P(t.from), B = P(t.to);
+  t.give.forEach(function(i){ st.board[i].owner = B.id; });
+  t.get.forEach(function(i){ st.board[i].owner = A.id; });
+  A.cash -= t.cashGive; B.cash += t.cashGive;
+  B.cash -= t.cashGet;  A.cash += t.cashGet;
+  var turns = Math.max(1, t.pactRounds) * st.players.length;
+  if(t.pactGive) addPact(A.id, B.id, turns);
+  if(t.pactGet)  addPact(B.id, A.id, turns);
+  logIt("Сделка состоялась: " + tradeSummary(t));
+}
+
+/* оценка ботом: рынок + бонус за достройку группы − потеря своей группы */
+function botTradeValue(t){
+  var A = P(t.from), B = P(t.to);   // B — бот, он решает
+  var val = 0, notes = [];
+  function mkt(sp){ return sp.mortgaged ? Math.round(sp.price/2) : sp.price; }
+
+  t.give.forEach(function(i){        // бот получает
+    var sp = st.board[i];
+    val += mkt(sp);
+    if(sp.type === "prop"){
+      var others = groupSpaces(sp.group).filter(function(s){ return s.idx !== i; });
+      if(others.length && others.every(function(s){ return s.owner === B.id; })){
+        val += Math.round(sp.price * 0.7); notes.push("достраивает " + sp.groupName);
+      }
+    }
+  });
+  t.get.forEach(function(i){         // бот отдаёт
+    var sp = st.board[i];
+    val -= mkt(sp);
+    if(sp.type === "prop" && ownsGroup(B.id, sp.group)){
+      val -= Math.round(sp.price * 0.9); notes.push("ломает свою группу " + sp.groupName);
+    }
+  });
+  val += t.cashGive - t.cashGet;
+  if(t.pactGet) val += 22 * t.pactRounds * st.players.length / 4;   // ему не берут аренду
+  if(t.pactGive) val -= 30 * t.pactRounds * st.players.length / 4;  // он сам не берёт
+  if(B.cash - t.cashGet < 120) return {ok:false, why:"нет свободных денег"};
+  var ok = val > 40;
+  return {ok:ok, why:(ok ? "выгода " : "невыгодно ") + money(Math.abs(Math.round(val))) +
+                     (notes.length ? " · " + notes.join(", ") : "")};
+}
+
+/* бот сам иногда предлагает выкуп участка, который достраивает ему группу */
+function botOfferTrade(bot){
+  if(st.trade || st.tradeTried) return false;
+  st.tradeTried = true;                 // одна попытка за ход
+  if(Math.random() > 0.6) return false;
+  var want = null;
+  st.board.forEach(function(sp){
+    if(sp.type !== "prop" || sp.owner == null || sp.owner === bot.id || sp.mortgaged) return;
+    if(!tradable(sp)) return;
+    var others = groupSpaces(sp.group).filter(function(s){ return s.idx !== sp.idx; });
+    if(others.length && others.every(function(s){ return s.owner === bot.id; })) want = sp;
+  });
+  if(!want) return false;
+  var offer = Math.round(want.price * 1.55);
+  if(bot.cash - offer < 250) return false;
+  var seller = P(want.owner);
+  st.trade = {
+    phase:(seller.bot ? "compose" : "offer"), from:bot.id, to:seller.id,
+    give:[], get:[want.idx], cashGive:offer, cashGet:0,
+    pactGive:false, pactGet:false, pactRounds:2, verdict:null
+  };
+  logIt(nm(bot) + " предлагает " + nm(seller) + " выкупить «" + escape_(want.name) + "» за " + nAmt(offer) + ".");
+  if(seller.bot){
+    // считаем со стороны продавца: инвертируем роли
+    var mirrored = {from:bot.id, to:seller.id, give:st.trade.give, get:st.trade.get,
+                    cashGive:st.trade.cashGive, cashGet:st.trade.cashGet,
+                    pactGive:false, pactGet:false, pactRounds:2};
+    var v = botSellerValue(mirrored);
+    if(v){ applyTrade(st.trade); } else { logIt(nm(seller) + " не продаёт."); }
+    st.trade = null;
+  }
+  return true;
+}
+function botSellerValue(t){
+  var sp = st.board[t.get[0]];
+  return t.cashGive >= Math.round(sp.price * 1.4);
+}
+
+/* ======================= bankruptcy ======================= */
+function bankrupt(){
+  var d = st.debt; if(!d) return;
+  if(!canAct()) return;
+  var p = P(d.pid), to = (d.to != null) ? P(d.to) : null;
+  myProps(p.id).forEach(function(s){
+    if(to){
+      s.owner = to.id;
+      if(s.type === "prop" && s.houses > 0){
+        to.cash += Math.round(s.houses === 5 ? s.houseCost*5/2 : s.houses*s.houseCost/2);
+        s.houses = 0;
+      }
+    } else {
+      s.owner = null; s.houses = 0; s.mortgaged = false;
+    }
+  });
+  if(to && p.cash > 0){ to.cash += p.cash; }
+  if(to && p.outCards) to.outCards += p.outCards;
+  p.cash = 0; p.outCards = 0; p.alive = false; p.jail = false;
+  dropPacts(p.id);
+  st.debt = null; st.pending = null; st.mustRoll = false; st.trade = null;
+  logIt(nm(p) + " объявляет банкротство" + (to ? " в пользу " + nm(to) : " — всё уходит банку") + ".");
+  var left = alive();
+  if(left.length <= 1){
+    st.over = true;
+    if(left.length === 1) logIt("Победа: " + nm(left[0]) + "!");
+    render(); save(); return;
+  }
+  if(cur().id === p.id){ st.mustRoll = false; st.busy = false; endTurn(); }
+  else { render(); save(); maybeBot(); }
+}
+
+/* ======================= bots ======================= */
+function maybeBot(){
+  clearTimeout(botTimer);
+  if(!st || st.over || st.busy) return;
+  if(st.online && !net.isHost) return;      // ботов ведёт только хозяин комнаты
+  var p = cur();
+  if(!p || !p.bot || !p.alive) return;
+  var g = gen;
+  botTimer = setTimeout(function(){ if(g === gen) botStep(); }, 620);
+}
+function botStep(){
+  if(!st || st.over || st.busy) return;
+  var p = cur();
+  if(!p.bot) return;
+  // ждём, пока человек ответит на предложение бота
+  if(st.trade && st.trade.phase === "offer" && !P(st.trade.to).bot) return;
+
+  if(st.debt){
+    if(st.debt.pid !== p.id){ return; }
+    if(!botRaise(p)) bankrupt();
+    else { render(); save(); botAgain(420); }
+    return;
+  }
+  if(st.pending && st.pending.type === "casino"){
+    if(p.cash > 700) casinoBet(); else casinoSkip();
+    return;
+  }
+  if(st.pending && st.pending.type === "buy"){
+    var sp = st.board[st.pending.i];
+    var completes = sp.type === "prop" && groupSpaces(sp.group).some(function(s){ return s.owner === p.id; });
+    var reserve = completes ? 60 : 160;
+    if(p.cash - sp.price >= reserve) buy(); else skipBuy();
+    return;
+  }
+  if(p.jail && st.mustRoll){
+    if(p.outCards > 0){ useCard(); return; }
+    if(p.cash > 350 || p.jailTurns >= 2){ payJail(); return; }
+  }
+  if(st.mustRoll){ rollDice(); return; }
+  if(botBuild(p)){ render(); save(); botAgain(400); return; }
+  if(botOfferTrade(p)){ render(); save(); botAgain(700); return; }
+  endTurn();
+}
+function botAgain(ms){
+  var g = gen;
+  clearTimeout(botTimer);
+  botTimer = setTimeout(function(){ if(g === gen) botStep(); }, ms);
+}
+function botRaise(p){
+  // sell houses first, then mortgage cheapest deeds
+  var mine = myProps(p.id);
+  var withHouses = mine.filter(canSell).sort(function(a,b){ return b.houseCost - a.houseCost; });
+  if(withHouses.length){ sellHouse(withHouses[0].idx); return true; }
+  var free = mine.filter(canMortgage).sort(function(a,b){ return a.price - b.price; });
+  if(free.length){ mortgage(free[0].idx); return true; }
+  return false;
+}
+function botBuild(p){
+  if(p.cash < 420) return false;
+  var best = null;
+  myProps(p.id).forEach(function(s){
+    if(canBuild(s) && p.cash - s.houseCost > 320){
+      if(!best || s.rents[1] > best.rents[1]) best = s;
+    }
+  });
+  if(best){ build(best.idx); return true; }
+  return false;
+}
+
+/* ======================= render ======================= */
+function render(){
+  if(!st) return;
+  renderFelt(false);
+  paintTiles();
+  renderTokens();
+  renderPlayers();
+  renderActions();
+  renderAssets();
+  renderDetail();
+  renderTrade();
+  renderLog();
+  renderChat();
+  renderOver();
+  el.boardEcho.textContent = st.board.meta.N + " клеток";
+  el.brandSub.textContent = st.players.length + " игроков · " + st.board.meta.N + " клеток · " + st.board.meta.groups + " групп";
+  el.mastActions.innerHTML = "";
+  var nb = document.createElement("button");
+  nb.className = "btn";
+  nb.textContent = st.online ? "Выйти из комнаты" : "Новая партия";
+  nb.onclick = function(){
+    if(st.online){
+      if(!st.over && !confirm("Покинуть комнату?")) return;
+      leaveRoom(); renderSetup(); return;
+    }
+    if(!st.over && !confirm("Прервать партию и вернуться к настройке?")) return;
+    stopTimers();
+    try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+    st = null; el.game.hidden = true; el.setup.hidden = false; renderSetup();
+  };
+  el.mastActions.appendChild(nb);
+}
+
+function paintTiles(){
+  for(var i=0;i<st.board.length;i++){
+    var sp = st.board[i], d = tileEls[i];
+    if(!d) continue;
+    var hs = d.querySelector(".hs");
+    d.classList.toggle("owned", sp.owner != null);
+    if(sp.owner != null) d.style.setProperty("--ow", P(sp.owner).color);
+    d.classList.toggle("mortg", !!sp.mortgaged);
+    d.classList.toggle("sel", selTile === i);
+    if(sp.type === "prop" && sp.houses > 0){
+      hs.textContent = sp.houses === 5 ? "\u{1F3E8}" : Array(sp.houses+1).join("▲");
+    } else if(hs.textContent) hs.textContent = "";
+    if(sp.type === "parking"){
+      var pot = d.querySelector(".strip.pot");
+      if(pot){
+        pot.textContent = (st.modes && st.modes.jackpot && st.pot) ? st.pot : "";
+        pot.style.background = (st.modes && st.modes.jackpot && st.pot) ? "#B8862A" : "transparent";
+      }
+    }
+  }
+}
+
+function renderTokens(){
+  if(!st || !tokLayer) return;
+  var L = st.board.meta.L, S = L+2, cell = 100/S;
+  var byCell = {};
+  st.players.forEach(function(p){
+    if(!p.alive){ if(tokEls[p.id]) tokEls[p.id].style.display = "none"; return; }
+    (byCell[p.pos] = byCell[p.pos] || []).push(p);
+  });
+  Object.keys(byCell).forEach(function(k){
+    var list = byCell[k], pos = cellPos(+k, L);
+    var n = list.length;
+    list.forEach(function(p, idx){
+      var t = tokEls[p.id]; if(!t) return;
+      t.style.display = "grid";
+      var ox = 0, oy = 0;
+      if(n > 1){
+        var a = (idx / n) * Math.PI * 2 - Math.PI/2;
+        var rad = cell * (n > 4 ? 0.30 : 0.24);
+        ox = Math.cos(a) * rad; oy = Math.sin(a) * rad;
+      }
+      t.style.left = ((pos.c - 0.5) * cell + ox) + "%";
+      t.style.top  = ((pos.r - 0.5) * cell + oy) + "%";
+      t.classList.toggle("act", st.players[st.turn] && st.players[st.turn].id === p.id);
+      t.classList.toggle("jailed", !!p.jail);
+    });
+  });
+}
+
+function renderFelt(rolling){
+  if(!boardEl || !st) return;
+  var info = boardEl.querySelector("#finfo");
+  if(!info) return;
+  var p = cur(), d1 = st.dice[0], d2 = st.dice[1];
+  info.innerHTML =
+    '<div class="turn-chip"><span class="tk" style="background:' + p.color + '">' + p.tok + '</span>' +
+      '<span class="who">' + escape_(p.name) + (p.bot ? " · бот" : "") + '</span>' +
+      '<span class="cash">' + money(p.cash) + '</span></div>' +
+    '<div class="dice">' + die(d1, rolling) + die(d2, rolling) + '</div>' +
+    (st.card ? '<div class="felt-card"><b>' + (st.card.kind === "chance" ? "Шанс" : "Казна") + '</b>' + escape_(st.card.t) + '</div>'
+             : '<div class="felt-msg">' + escape_(st.msg || (p.jail ? "В изоляторе" : "Ваш бросок")) + '</div>') +
+    (st.modes && st.modes.jackpot && st.pot > 0
+      ? '<div class="felt-sub">джекпот на стоянке · ' + money(st.pot) + '</div>' : "");
+}
+function die(v, rolling){
+  var s = '<div class="die' + (rolling ? " rolling" : "") + '" data-v="' + v + '" aria-label="кубик ' + v + '">';
+  for(var i=0;i<9;i++) s += "<i></i>";
+  return s + "</div>";
+}
+
+function renderPlayers(){
+  if(!st) return;
+  var host = el.players; host.innerHTML = "";
+  st.players.forEach(function(p){
+    var d = document.createElement("div");
+    d.className = "pcard" + (p.id === st.turn && !st.over ? " turn" : "") + (p.alive ? "" : " dead");
+    var props = myProps(p.id).length;
+    var tags = [];
+    if(p.bot) tags.push("бот");
+    if(st.online && p.owner && p.owner === me.id) tags.push("вы");
+    if(p.jail) tags.push("изолятор");
+    if(p.outCards) tags.push("карта выхода ×" + p.outCards);
+    if(!p.alive) tags.push("банкрот");
+    (st.pacts || []).forEach(function(k){
+      if(k.owner === p.id) tags.push("не берёт с " + P(k.guest).name + " (" + k.left + ")");
+    });
+    d.innerHTML =
+      '<div class="tk" style="background:' + p.color + '">' + p.tok + '</div>' +
+      '<div class="pinfo"><div class="nm">' + escape_(p.name) + '</div>' +
+      '<div class="meta"><span>' + props + ' участк.</span>' + (tags.length ? "<span>" + tags.join(" · ") + "</span>" : "") + '</div></div>' +
+      '<div class="money">' + money(p.cash) +
+        (worth(p) !== p.cash ? '<small>капитал ' + money(worth(p)) + '</small>' : "") + '</div>';
+    host.appendChild(d);
+  });
+}
+
+function renderActions(){
+  var host = el.actions; host.innerHTML = "";
+  host.className = "actions" + (st.debt ? " warn" : "");
+  if(st.over){
+    host.innerHTML = '<div class="hint"><b>Партия закончена.</b> Итоги ниже.</div>';
+    return;
+  }
+  var p = cur();
+  var hint = document.createElement("div"); hint.className = "hint";
+  var acts = [];
+
+  // онлайн: ходит другой игрок — показываем, кого ждём
+  if(st.online && !canAct()){
+    hint.innerHTML = "Ход <b>" + escape_(p.name) + "</b>" + (p.bot ? " (бот)" : "") + " — ждём его решения.";
+    host.appendChild(hint);
+    var lv = btn("Выйти из комнаты", leaveRoom, "");
+    host.appendChild(lv);
+    return;
+  }
+
+  if(st.debt){
+    var d = st.debt;
+    hint.innerHTML = "<b>" + escape_(P(d.pid).name) + "</b>: долг " + nAmt(d.owed) +
+      ". Продайте дома или заложите участки в панели «Активы хода».";
+    acts.push(btn("Объявить банкротство", bankrupt, "danger"));
+  } else if(st.busy){
+    hint.innerHTML = "Ход в процессе…";
+  } else if(p.bot){
+    hint.innerHTML = "<b>" + escape_(p.name) + "</b> (бот) обдумывает ход…";
+  } else if(p.jail && st.mustRoll){
+    hint.innerHTML = "<b>" + escape_(p.name) + "</b> в изоляторе. Выйти можно дублем, за " + money(50) + " или картой.";
+    acts.push(btn("Бросить кубики", rollDice, "pri"));
+    acts.push(btn("Заплатить " + money(50), payJail, p.cash >= 50 ? "" : "off"));
+    if(p.outCards) acts.push(btn("Карта освобождения", useCard, ""));
+  } else if(st.mustRoll){
+    hint.innerHTML = "Ход <b>" + escape_(p.name) + "</b>" + (st.doubles ? " · дубль, бросок ещё раз" : "") + ".";
+    if(st.pending && st.pending.type === "buy"){
+      var sp0 = st.board[st.pending.i];
+      hint.innerHTML = "«" + escape_(sp0.name) + "» свободен — " + money(sp0.price) + ". И у вас ещё один бросок.";
+      acts.push(btn("Купить · " + money(sp0.price), buy, p.cash >= sp0.price ? "pri" : "off"));
+      acts.push(btn("Отказаться", skipBuy, ""));
+    }
+    acts.push(btn(st.doubles ? "Бросить снова" : "Бросить кубики", rollDice, st.pending ? "" : "pri"));
+  } else if(st.pending && st.pending.type === "casino"){
+    hint.innerHTML = "<b>Казино.</b> Ставка " + money(st.pending.bet) +
+      ": кубик 6 — тройная выплата, 4–5 — возврат, 1–3 — банк забирает.";
+    acts.push(btn("Поставить " + money(st.pending.bet), casinoBet, p.cash >= st.pending.bet ? "pri" : "off"));
+    acts.push(btn("Пройти мимо", casinoSkip, ""));
+  } else if(st.pending && st.pending.type === "buy"){
+    var sp = st.board[st.pending.i];
+    hint.innerHTML = "«" + escape_(sp.name) + "» свободен. Цена " + money(sp.price) +
+      (sp.type === "prop" ? ", аренда " + money(sp.rents[0]) : "") + ".";
+    acts.push(btn("Купить · " + money(sp.price), buy, p.cash >= sp.price ? "pri" : "off"));
+    acts.push(btn("Отказаться и завершить ход", skipBuy, ""));
+  } else {
+    hint.innerHTML = "Можно строить, торговаться — или завершить ход.";
+    if(alive().length > 1) acts.push(btn("Сделка", openTrade, ""));
+    acts.push(btn("Завершить ход", endTurn, "pri"));
+  }
+  host.appendChild(hint);
+  acts.forEach(function(b){ host.appendChild(b); });
+}
+function btn(label, fn, kind){
+  var b = document.createElement("button");
+  b.className = "btn" + (kind === "pri" ? " pri" : kind === "danger" ? " danger" : "");
+  if(kind === "off") b.disabled = true;
+  b.textContent = label;
+  b.onclick = fn;
+  return b;
+}
+
+function renderAssets(){
+  var host = el.assets; host.innerHTML = "";
+  var pid = st.debt ? st.debt.pid : st.turn;
+  var p = P(pid);
+  el.assetsEcho.textContent = escape_(p.name);
+  var mine = myProps(pid);
+  if(!mine.length){ host.innerHTML = '<div class="empty">Участков пока нет.</div>'; return; }
+  var order = mine.slice().sort(function(a,b){ return (a.group == null ? 99 : a.group) - (b.group == null ? 99 : b.group) || a.idx - b.idx; });
+  var isTurn = (pid === st.turn) && !p.bot && !st.busy && !st.over && canAct();
+  order.forEach(function(sp){
+    var row = document.createElement("div"); row.className = "arow";
+    var clr = document.createElement("div"); clr.className = "clr";
+    clr.style.background = sp.type === "prop" ? (sp.color || GCOL[sp.group % GCOL.length]) : "var(--ink-3)";
+    var an = document.createElement("div"); an.className = "an";
+    var extra = sp.mortgaged ? "залог" :
+      (sp.type === "prop" ? (sp.houses === 5 ? "отель" : sp.houses ? sp.houses + " дом." : "аренда " + money(rentOf(sp, 7))) :
+       sp.type === "transport" ? "такса " + money(rentOf(sp, 7)) : "коммуналка");
+    an.innerHTML = escape_(sp.name) + " <em>" + extra + "</em>";
+    var ops = document.createElement("div"); ops.className = "ops";
+    if(isTurn){
+      if(sp.type === "prop"){
+        if(canBuild(sp)) ops.appendChild(mini("+дом " + money(sp.houseCost), function(){ build(sp.idx); }));
+        if(canSell(sp))  ops.appendChild(mini("−дом", function(){ sellHouse(sp.idx); }));
+      }
+      if(canMortgage(sp)) ops.appendChild(mini("залог " + money(Math.round(sp.price/2)), function(){ mortgage(sp.idx); }));
+      if(sp.mortgaged && !st.debt && p.cash >= Math.round(sp.price*0.55))
+        ops.appendChild(mini("выкуп " + money(Math.round(sp.price*0.55)), function(){ unmortgage(sp.idx); }));
+    }
+    row.appendChild(clr); row.appendChild(an); row.appendChild(ops);
+    host.appendChild(row);
+  });
+}
+function mini(label, fn){
+  var b = document.createElement("button");
+  b.className = "btn tiny"; b.textContent = label; b.onclick = fn;
+  return b;
+}
+
+function renderTrade(){
+  var t = st && st.trade;
+  if(!t){ el.trade.hidden = true; el.tradeBox.innerHTML = ""; return; }
+  el.trade.hidden = false;
+  var A = P(t.from), B = P(t.to);
+  var box = el.tradeBox;
+
+  if(t.phase === "verdict"){
+    box.innerHTML =
+      '<div class="tr-h"><h3>Ответ ' + escape_(B.name) + '</h3></div>' +
+      '<div class="tr-b"><div class="tr-sum">' + escape_(B.name) + " " + escape_(t.verdict) + '</div></div>' +
+      '<div class="tr-foot"><button class="btn pri" id="trClose">Понятно</button></div>';
+    box.querySelector("#trClose").onclick = closeTrade;
+    return;
+  }
+
+  var offering = (t.phase === "offer");
+  var head = offering
+    ? '<h3>' + escape_(B.name) + ', вам предложение</h3>'
+    : '<h3>Сделка с ' + escape_(B.name) + '</h3>';
+
+  var html = '<div class="tr-h">' + head + '<span class="lbl">' +
+    (offering ? "передайте устройство" : "выберите, что отдаёте и что просите") + '</span></div><div class="tr-b">';
+
+  if(!offering){
+    html += '<div class="tr-who" id="trWho"></div>';
+  }
+  html += '<div class="tr-cols">' +
+    '<div class="tr-col"><h4>' + escape_(A.name) + ' отдаёт · ' + money(A.cash) + '</h4><div class="tr-list" id="trGive"></div>' +
+      '<div class="tr-money"><span>доплата</span><input type="number" min="0" step="10" id="trCashGive" value="' + t.cashGive + '"></div></div>' +
+    '<div class="tr-col"><h4>' + escape_(B.name) + ' отдаёт · ' + money(B.cash) + '</h4><div class="tr-list" id="trGet"></div>' +
+      '<div class="tr-money"><span>доплата</span><input type="number" min="0" step="10" id="trCashGet" value="' + t.cashGet + '"></div></div>' +
+    '</div>' +
+    '<div class="tr-pact">' +
+      '<label><input type="checkbox" id="trPactGive"' + (t.pactGive ? " checked" : "") + '> ' +
+        escape_(A.name) + ' не берёт аренду с ' + escape_(B.name) + '</label>' +
+      '<label><input type="checkbox" id="trPactGet"' + (t.pactGet ? " checked" : "") + '> ' +
+        escape_(B.name) + ' не берёт аренду с ' + escape_(A.name) + '</label>' +
+      '<label>срок <select id="trRounds">' +
+        [1,2,3,5].map(function(r){ return '<option value="' + r + '"' + (t.pactRounds === r ? " selected" : "") + '>' + r + ' кр.</option>'; }).join("") +
+      '</select></label>' +
+    '</div>' +
+    '<div class="tr-sum" id="trSum"></div></div>';
+
+  html += '<div class="tr-foot">';
+  if(offering){
+    html += '<button class="btn" id="trNo">Отказаться</button><button class="btn pri" id="trYes">Принять</button>';
+  } else {
+    html += '<button class="btn" id="trCancel">Закрыть</button><button class="btn pri" id="trSend">Отправить предложение</button>';
+  }
+  html += '</div>';
+  box.innerHTML = html;
+
+  // partner picker
+  if(!offering){
+    var who = box.querySelector("#trWho");
+    st.players.forEach(function(o){
+      if(!o.alive || o.id === A.id) return;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-pressed", o.id === t.to ? "true" : "false");
+      b.innerHTML = '<span class="tk" style="background:' + o.color + '">' + o.tok + '</span>' +
+                    escape_(o.name) + (o.bot ? " · бот" : "");
+      b.onclick = function(){ t.to = o.id; t.get = []; renderTrade(); };
+      who.appendChild(b);
+    });
+  }
+
+  fillDeeds(box.querySelector("#trGive"), A.id, t.give, offering);
+  fillDeeds(box.querySelector("#trGet"),  B.id, t.get,  offering);
+
+  function bindNum(id, key, max){
+    var inp = box.querySelector(id);
+    inp.disabled = offering;
+    inp.oninput = function(){
+      var v = Math.max(0, Math.min(max, Math.round(+inp.value || 0)));
+      t[key] = v; sum();
+    };
+  }
+  bindNum("#trCashGive", "cashGive", A.cash);
+  bindNum("#trCashGet", "cashGet", B.cash);
+  ["trPactGive","trPactGet"].forEach(function(id, ix){
+    var c = box.querySelector("#" + id);
+    c.disabled = offering;
+    c.onchange = function(){ t[ix ? "pactGet" : "pactGive"] = c.checked; sum(); };
+  });
+  var sel = box.querySelector("#trRounds");
+  sel.disabled = offering;
+  sel.onchange = function(){ t.pactRounds = +sel.value; sum(); };
+
+  function sum(){ box.querySelector("#trSum").innerHTML = tradeSummary(t); }
+  sum();
+
+  if(offering){
+    box.querySelector("#trYes").onclick = acceptTrade;
+    box.querySelector("#trNo").onclick = declineTrade;
+  } else {
+    box.querySelector("#trCancel").onclick = closeTrade;
+    box.querySelector("#trSend").onclick = sendTrade;
+  }
+
+  function fillDeeds(host, pid, picked, readonly){
+    host.innerHTML = "";
+    var mine = myProps(pid);
+    if(!mine.length){ host.innerHTML = '<div class="empty">нет участков</div>'; return; }
+    mine.forEach(function(sp){
+      var row = document.createElement("div");
+      var locked = !tradable(sp);
+      row.className = "tr-item" + (locked ? " locked" : "");
+      row.setAttribute("aria-pressed", picked.indexOf(sp.idx) >= 0 ? "true" : "false");
+      row.innerHTML =
+        '<span class="clr" style="background:' + (sp.type === "prop" ? (sp.color || GCOL[sp.group % GCOL.length]) : "var(--ink-3)") + '"></span>' +
+        '<span class="n">' + escape_(sp.name) + (sp.mortgaged ? " · залог" : "") + '</span>' +
+        '<span class="v">' + (locked ? "дома" : money(sp.mortgaged ? Math.round(sp.price/2) : sp.price)) + '</span>';
+      if(!locked && !readonly){
+        row.onclick = function(){
+          var at = picked.indexOf(sp.idx);
+          if(at >= 0) picked.splice(at, 1); else picked.push(sp.idx);
+          row.setAttribute("aria-pressed", at >= 0 ? "false" : "true");
+          sum();
+        };
+      }
+      host.appendChild(row);
+    });
+  }
+}
+
+function renderDetail(){
+  var host = el.detail;
+  if(selTile == null){ host.hidden = true; host.innerHTML = ""; return; }
+  var sp = st.board[selTile];
+  host.hidden = false;
+  var color = sp.type === "prop" ? (sp.color || GCOL[sp.group % GCOL.length]) : "var(--acc)";
+  var rows = "";
+  if(sp.type === "prop"){
+    rows += tr("Аренда", money(sp.rents[0]));
+    rows += tr("Вся группа", money(sp.rents[0]*2));
+    for(var h=1;h<=4;h++) rows += tr(h + (h === 1 ? " дом" : " дома"), money(sp.rents[h]));
+    rows += tr("Отель", money(sp.rents[5]));
+    rows += tr("Дом / отель стоит", money(sp.houseCost));
+    rows += tr("Залог", money(Math.round(sp.price/2)));
+  } else if(sp.type === "transport"){
+    rows += tr("1 узел", money(25)) + tr("2 узла", money(50)) + tr("3 узла", money(100)) + tr("4 узла", money(200));
+    rows += tr("Залог", money(100));
+  } else if(sp.type === "utility"){
+    rows += tr("Одна станция", "4 × кубики") + tr("Обе станции", "10 × кубики") + tr("Залог", money(75));
+  } else if(sp.type === "tax"){
+    rows += tr("Платёж", money(sp.amount));
+    if(st.modes && st.modes.jackpot) rows += tr("Куда идёт", "в джекпот стоянки");
+  } else if(sp.type === "portal"){
+    rows += tr("Выход", "клетка " + sp.pair + " · «" + escape_(st.board[sp.pair].name) + "»");
+    rows += tr("Жалование", "не начисляется");
+  } else if(sp.type === "casino"){
+    rows += tr("Ставка", money(sp.bet)) + tr("Кубик 6", "выплата ×3") +
+            tr("Кубик 4–5", "ставка возвращается") + tr("Кубик 1–3", "банк забирает");
+  } else if(sp.type === "swap"){
+    rows += tr("Эффект", "меняетесь местами с ближайшим игроком впереди");
+  } else if(sp.type === "parking"){
+    rows += tr("Джекпот сейчас", money(st.pot || 0));
+  } else {
+    rows += tr("Тип клетки", sp.type === "chance" ? "карточка Шанс" : sp.type === "chest" ? "карточка Казна" : "угловая");
+  }
+  var ownerTxt = (sp.owner != null) ? escape_(P(sp.owner).name) : (sp.price ? "свободен" : "—");
+  host.innerHTML =
+    '<div class="dband" style="background:' + color + '">' + escape_(sp.groupName || sp.name) + '</div>' +
+    '<div class="panel-b" style="padding:12px 14px 14px">' +
+      '<div class="dnm">' + escape_(sp.name) + '</div>' +
+      '<div class="lbl">клетка ' + selTile + ' · владелец: ' + ownerTxt + (sp.mortgaged ? " · в залоге" : "") + '</div>' +
+      (sp.price ? '<div style="margin-top:8px;font-family:\'PT Mono\',monospace;color:var(--acc)">Цена ' + money(sp.price) + '</div>' : "") +
+      '<table>' + rows + '</table>' +
+    '</div>';
+}
+function tr(a, b){ return "<tr><td>" + a + "</td><td>" + b + "</td></tr>"; }
+
+function renderLog(){
+  el.log.innerHTML = st.log.map(function(l){ return "<div>" + l + "</div>"; }).join("");
+}
+
+function renderOver(){
+  var host = el.overBox;
+  if(!st.over){ host.innerHTML = ""; return; }
+  var rank = st.players.slice().sort(function(a,b){
+    return (b.alive - a.alive) || (worth(b) - worth(a));
+  });
+  var rows = rank.map(function(p, i){
+    return '<div class="r"><span class="pl">' + (i+1) + '</span>' +
+      '<span><b style="color:' + p.color + '">' + p.tok + '</b> ' + escape_(p.name) + (p.alive ? "" : " · банкрот") + '</span>' +
+      '<span class="mono">' + money(worth(p)) + '</span></div>';
+  }).join("");
+  var win = alive()[0];
+  host.innerHTML =
+    '<div class="over"><h2>' + (win ? escape_(win.name) + " держит город" : "Все разорились") + '</h2>' +
+    '<div class="lbl">итоговый капитал</div><div class="stand">' + rows + '</div></div>';
+}
+
+/* ======================= persistence ======================= */
+function snapshot(){
+  return {
+    n:st.players.length,
+    players:st.players.map(function(p){
+      return {id:p.id,name:p.name,bot:p.bot,owner:p.owner||null,cash:p.cash,pos:p.pos,jail:p.jail,
+              jailTurns:p.jailTurns,outCards:p.outCards,alive:p.alive};
+    }),
+    deeds:st.board.map(function(s){ return [s.owner, s.houses||0, s.mortgaged?1:0]; }),
+    turn:st.turn, dice:st.dice, doubles:st.doubles, mustRoll:st.mustRoll,
+    pending:st.pending, debt:st.debt, over:st.over, log:st.log.slice(0,40),
+    chance:st.chance, chest:st.chest, msg:st.msg,
+    modes:st.modes, pot:st.pot, pacts:st.pacts, trade:st.trade || null,
+    tradeTried:!!st.tradeTried, pack:st.pack || packId
+  };
+}
+function save(){
+  if(!st) return;
+  if(!st.online){
+    try{ localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot())); }catch(e){}
+  }
+  netPush();
+}
+function hasSave(){
+  try{ return !!localStorage.getItem(SAVE_KEY); }catch(e){ return false; }
+}
+function hydrate(snap){
+  if(!snap || !snap.players || !snap.players.length) return false;
+  var board = buildBoard(snap.n, snap.modes || {}, packById(snap.pack || packId));
+  if(!snap.deeds || snap.deeds.length !== board.length) return false;
+  snap.deeds.forEach(function(d, i){
+    board[i].owner = d[0]; board[i].houses = d[1]; board[i].mortgaged = !!d[2];
+  });
+  st = {
+    board:board,
+    players:snap.players.map(function(p, i){
+      return {id:i,name:p.name,color:PCOL[i % PCOL.length],tok:PTOK[i % PTOK.length],bot:p.bot,
+              owner:p.owner||null,cash:p.cash,pos:p.pos,
+              jail:p.jail,jailTurns:p.jailTurns,outCards:p.outCards,alive:p.alive};
+    }),
+    turn:snap.turn||0, dice:snap.dice||[1,1], doubles:snap.doubles||0,
+    mustRoll:snap.mustRoll !== false, pending:snap.pending||null, debt:snap.debt||null,
+    busy:false, over:!!snap.over, chance:snap.chance||shuffle(range(CHANCE.length)),
+    chest:snap.chest||shuffle(range(CHEST.length)), log:snap.log||[], msg:snap.msg||"",
+    card:null, rentX:1, utilX:0, salary:200, online:false,
+    modes:snap.modes||{}, pot:snap.pot||0, pacts:snap.pacts||[],
+    trade:snap.trade||null, tradeTried:!!snap.tradeTried, pack:snap.pack||packId
+  };
+  return true;
+}
+function loadSave(){
+  stopTimers();
+  var snap;
+  try{ snap = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){ return false; }
+  if(!hydrate(snap)) return false;
+  el.setup.hidden = true; el.game.hidden = false;
+  mountBoard(); render(); maybeBot();
+  return true;
+}
+
+/* ======================= свои паки картинок ======================= */
+function renderPacks(){
+  if(!el.packs) return;
+  var cur = packById(packId);
+  el.packEcho.textContent = cur.name;
+  el.packs.innerHTML = "";
+  allPacks().forEach(function(pk){
+    var row = document.createElement("button");
+    row.type = "button";
+    row.className = "moderow";
+    row.setAttribute("aria-pressed", pk.id === packId ? "true" : "false");
+    var count = 0;
+    (pk.groups || []).forEach(function(g){ count += (g.items || []).length; });
+    row.innerHTML = '<span class="mg">' + (pk.user ? "★" : (pk.id === "gomel" ? "Г" : "Б")) + '</span>' +
+      '<span class="mt"><b>' + escape_(pk.name) + '</b><i>' +
+        escape_(pk.note || "") + " · " + (pk.groups || []).length + " групп, " + count + " клеток" + '</i></span>' +
+      '<span class="mtog">' + (pk.id === packId ? "выбран" : "выбрать") + '</span>';
+    row.onclick = function(){ packId = pk.id; savePacks(); renderSetup(); };
+    el.packs.appendChild(row);
+    if(pk.user){
+      var del = document.createElement("button");
+      del.type = "button"; del.className = "btn tiny"; del.textContent = "удалить пак";
+      del.style.margin = "2px 0 6px";
+      del.onclick = function(){
+        userPacks = userPacks.filter(function(x){ return x.id !== pk.id; });
+        if(packId === pk.id) packId = "brands";
+        savePacks(); renderSetup();
+      };
+      el.packs.appendChild(del);
+    }
+  });
+}
+function shrinkImage(file, cb){
+  var fr = new FileReader();
+  fr.onload = function(){
+    var img = new Image();
+    img.onload = function(){
+      var m = 128, k = Math.min(m/img.width, m/img.height, 1);
+      var c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.width*k));
+      c.height = Math.max(1, Math.round(img.height*k));
+      try{
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        cb(c.toDataURL("image/png"));
+      }catch(e){ cb(null); }
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = fr.result;
+  };
+  fr.onerror = function(){ cb(null); };
+  fr.readAsDataURL(file);
+}
+function onPackFiles(ev){
+  var files = Array.prototype.slice.call(ev.target.files || []);
+  ev.target.value = "";
+  if(!files.length) return;
+  if(files.length > 60){ files = files.slice(0, 60); flash("Взял первые 60 картинок"); }
+  var name = (el.packName.value || "").trim() || ("Мой пак " + (userPacks.length + 1));
+  var items = new Array(files.length), left = files.length;
+  flash("Готовлю пак из " + files.length + " картинок…");
+  files.forEach(function(f, ix){
+    shrinkImage(f, function(url){
+      items[ix] = url ? {n:f.name.replace(/\.[^.]+$/, "").slice(0, 18), img:url} : null;
+      if(--left === 0) finishPack(name, items);
+    });
+  });
+}
+function finishPack(name, items){
+  items = items.filter(function(x){ return x && x.img; });
+  if(items.length < 6){ flash("Нужно хотя бы 6 картинок"); return; }
+  var groups = [];
+  for(var i=0;i<items.length;i+=3){
+    var chunk = items.slice(i, i+3);
+    groups.push({g:chunk[0].n, c:GCOL[groups.length % GCOL.length], k:"blocks", items:chunk});
+  }
+  var pack = {id:"u" + rid(6), name:name.slice(0,24), note:"свой пак", groups:groups, user:true};
+  userPacks.push(pack);
+  packId = pack.id;
+  savePacks();
+  el.packName.value = "";
+  flash("Пак «" + pack.name + "» готов: " + groups.length + " групп");
+  renderSetup();
+}
+function exportPack(){
+  var pk = packById(packId);
+  var text = JSON.stringify(pk);
+  var fname = "pack-" + (pk.id || "custom") + ".json";
+  if(window.claude && window.claude.use){
+    window.claude.use("downloads").then(function(dl){
+      if(!dl){ copyText(text.length < 4000 ? text : "пак слишком большой для буфера"); return; }
+      dl.save({filename:fname, data:text}).then(function(){ flash("Пак сохранён в файл"); },
+                                                function(){ flash("Сохранение отменено"); });
+    }, function(){ copyText(text); });
+  } else {
+    copyText(text);
+  }
+}
+function onPackImport(ev){
+  var f = (ev.target.files || [])[0];
+  ev.target.value = "";
+  if(!f) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    var pk;
+    try{ pk = JSON.parse(fr.result); }catch(e){ flash("Это не файл пака"); return; }
+    if(!pk || !pk.groups || !pk.groups.length){ flash("В файле нет групп"); return; }
+    pk.id = "u" + rid(6); pk.user = true;
+    pk.name = String(pk.name || "Загруженный пак").slice(0, 24);
+    userPacks.push(pk); packId = pk.id; savePacks();
+    flash("Пак «" + pk.name + "» загружен");
+    renderSetup();
+  };
+  fr.onerror = function(){ flash("Не удалось прочитать файл"); };
+  fr.readAsText(f);
+}
+
+/* ======================= Firestore как второй бэкенд =======================
+   В артефакте claude.ai используется его собственное realtime-хранилище.
+   На обычном хостинге (GitHub Pages, Vercel, Render) внешняя сеть открыта —
+   тогда подключаем Firestore проекта пользователя: конфиг вводится в интерфейсе
+   и хранится только в его браузере. */
+var FB_KEY = "grandtour.fb.v1";
+var fbBusy = false;
+
+function fbSaved(){
+  try{ return JSON.parse(localStorage.getItem(FB_KEY)); }catch(e){ return null; }
+}
+function fbStore(cfg){
+  try{ localStorage.setItem(FB_KEY, JSON.stringify(cfg)); }catch(e){}
+}
+function fbForget(){
+  try{ localStorage.removeItem(FB_KEY); }catch(e){}
+  net.db = null; net.note = "Firestore отключён."; net.noteKind = "warn";
+  if(net.on) leaveRoom(); else renderOnline();
+}
+/* из вставленного текста достаём конфиг: JSON или кусок кода с firebaseConfig = {...} */
+function fbParse(text){
+  text = String(text || "").trim();
+  if(!text) return null;
+  var m = text.match(/\{[\s\S]*\}/);
+  if(!m) return null;
+  var body = m[0];
+  try{ return JSON.parse(body); }catch(e){}
+  try{
+    // допускаем ключи без кавычек и одинарные кавычки
+    var fixed = body
+      .replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g, '$1"$2":')
+      .replace(/'/g, '"')
+      .replace(/,(\s*[}\]])/g, "$1");
+    return JSON.parse(fixed);
+  }catch(e2){ return null; }
+}
+function fbConnect(text, quiet){
+  var cfg = (typeof text === "object" && text) ? text : fbParse(text);
+  if(!cfg || !cfg.projectId){
+    flash("Не разобрал конфиг: нужен объект с projectId");
+    return;
+  }
+  if(fbBusy) return;
+  fbBusy = true;
+  net.note = "Подключаюсь к Firestore…"; net.noteKind = ""; renderOnline();
+  Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+  ]).then(function(mods){
+    var app = mods[0].initializeApp(cfg, "grandtour-" + Date.now());
+    var fs = mods[1];
+    var fdb = fs.getFirestore(app);
+    net.db = fsAdapter(fs, fdb);
+    net.backend = "firestore";
+    fbStore(cfg);
+    net.ready = true;
+    net.note = "Firestore подключён (" + cfg.projectId + "). Создайте комнату и передайте другу код.";
+    net.noteKind = "ok";
+    fbBusy = false;
+    pubProfile();
+    renderOnline();
+    if(!quiet) flash("Firestore подключён");
+  }).catch(function(e){
+    fbBusy = false;
+    net.note = "Firestore не подключился: " + (e && e.message ? e.message : "ошибка загрузки SDK") +
+               ". Проверьте конфиг и правила доступа.";
+    net.noteKind = "warn";
+    renderOnline();
+  });
+}
+/* адаптер: тот же интерфейс, что у хранилища артефакта */
+function fsAdapter(fs, fdb){
+  function wrapDoc(sn){
+    return {
+      id:sn.id,
+      exists:(typeof sn.exists === "function") ? sn.exists() : !!sn.exists,
+      data:function(){ return sn.data(); },
+      metadata:{fromCache:false, hasPendingWrites:!!(sn.metadata && sn.metadata.hasPendingWrites)}
+    };
+  }
+  function docRef(path){
+    var r = fs.doc(fdb, path);
+    return {
+      path:path,
+      get:function(){ return fs.getDoc(r).then(wrapDoc); },
+      set:function(d){ return fs.setDoc(r, d); },
+      update:function(d){ return fs.updateDoc(r, d); },
+      delete:function(){ return fs.deleteDoc(r); },
+      onSnapshot:function(next, err){
+        return fs.onSnapshot(r, function(sn){ next(wrapDoc(sn)); }, err || function(){});
+      },
+      collection:function(sub){ return collRef(path + "/" + sub); }
+    };
+  }
+  function collRef(path){
+    var base = fs.collection(fdb, path), clauses = [];
+    var api = {
+      path:path,
+      doc:function(id){ return docRef(path + "/" + (id || ("d" + rid(12)))); },
+      where:function(f, op, v){ clauses.push(fs.where(f, op, v)); return api; },
+      orderBy:function(f, dir){ clauses.push(fs.orderBy(f, dir || "asc")); return api; },
+      limit:function(n){ clauses.push(fs.limit(n)); return api; },
+      get:function(){
+        var q = fs.query.apply(null, [base].concat(clauses));
+        return fs.getDocs(q).then(function(qs){
+          var docs = [];
+          qs.forEach(function(d){ docs.push(wrapDoc(d)); });
+          return {docs:docs, size:docs.length, empty:docs.length === 0, docChanges:function(){ return []; }, metadata:{}};
+        });
+      },
+      onSnapshot:function(next, err){
+        var q = fs.query.apply(null, [base].concat(clauses));
+        return fs.onSnapshot(q, function(qs){
+          var docs = [];
+          qs.forEach(function(d){ docs.push(wrapDoc(d)); });
+          next({docs:docs, size:docs.length, empty:docs.length === 0, docChanges:function(){ return []; }, metadata:{}});
+        }, err || function(){});
+      }
+    };
+    return api;
+  }
+  return {doc:docRef, collection:collRef};
+}
+
+/* ======================= онлайн: профиль, друзья, комнаты, чат =======================
+   Внешний Firestore из песочницы артефакта недоступен (CSP), поэтому здесь
+   собственное realtime-хранилище артефакта: документы + живые подписки. */
+var ME_KEY = "grandtour.me.v1", FR_KEY = "grandtour.friends.v1";
+var me = null, friends = [];
+var net = {
+  db:null, room:null, ready:false, on:false, code:null, hostId:null, isHost:false,
+  seats:[], phase:"idle", modes:null, version:0, chat:[], peers:[],
+  unsubRoom:null, unsubChat:null, note:"Проверяем связь…", noteKind:"", tab:"local"
+};
+
+function rid(n){
+  var a = "abcdefghijklmnopqrstuvwxyz0123456789", s = "";
+  for(var i=0;i<n;i++) s += a.charAt(Math.floor(Math.random()*a.length));
+  return s;
+}
+function rcode(n){
+  var a = "ACDEFGHJKLMNPQRTUVWXY34789", s = "";
+  for(var i=0;i<n;i++) s += a.charAt(Math.floor(Math.random()*a.length));
+  return s;
+}
+function loadMe(){
+  try{ var r = localStorage.getItem(ME_KEY); if(r) me = JSON.parse(r); }catch(e){}
+  if(!me || !me.id) me = {id:rid(14), name:"", code:rcode(5)};
+  if(!me.code) me.code = rcode(5);
+  saveMe();
+}
+function saveMe(){ try{ localStorage.setItem(ME_KEY, JSON.stringify(me)); }catch(e){} }
+function loadFriends(){
+  try{ friends = JSON.parse(localStorage.getItem(FR_KEY)) || []; }catch(e){ friends = []; }
+  if(!Array.isArray(friends)) friends = [];
+}
+function saveFriends(){ try{ localStorage.setItem(FR_KEY, JSON.stringify(friends)); }catch(e){} }
+
+var toastTimer = null;
+function flash(text){
+  el.toast.textContent = text;
+  el.toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.toast.hidden = true; }, 3200);
+}
+
+function netInit(){
+  loadMe(); loadFriends();
+  if(!window.claude || typeof window.claude.use !== "function"){
+    // обычный хостинг: онлайн через Firestore проекта пользователя
+    net.backend = "firestore";
+    var saved = fbSaved();
+    if(saved){ net.ready = true; renderOnline(); fbConnect(saved, true); return; }
+    net.ready = true;
+    net.note = "Чтобы играть онлайн, подключите свой проект Firebase — это бесплатно и занимает пару минут.";
+    net.noteKind = "warn";
+    renderOnline();
+    return;
+  }
+  net.backend = "artifact";
+  renderOnline();
+  window.claude.use("db").then(function(db){
+    net.db = db || null;
+    net.ready = true;
+    if(db){
+      net.note = "Связь есть. Создайте комнату и отправьте другу код — он войдёт с любого устройства.";
+      net.noteKind = "ok";
+      pubProfile();
+    } else {
+      net.note = "Онлайн-хранилище недоступно в этом просмотре. Игра за одним устройством работает.";
+      net.noteKind = "warn";
+    }
+    renderOnline();
+  }, function(){
+    net.ready = true; net.note = "Онлайн недоступен."; net.noteKind = "warn"; renderOnline();
+  });
+  window.claude.use("room").then(function(r){
+    net.room = r || null;
+    if(!r) return;
+    try{
+      r.onPeers(function(ch){ net.peers = (ch && ch.peers) || []; renderOnline(); renderChat(); });
+    }catch(e){}
+    pushPresence();
+  }, function(){});
+}
+function pushPresence(){
+  if(!net.room) return;
+  try{ net.room.presence({who:(me.name || "Гость"), pid:me.id, room:(net.code || "")}); }catch(e){}
+}
+function pubProfile(){
+  if(!net.db) return;
+  try{
+    net.db.doc("profiles/" + me.id)
+      .set({id:me.id, name:me.name || "Гость", code:me.code, seen:Date.now()})
+      .catch(function(){});
+  }catch(e){}
+}
+function peerOnline(pid){
+  return net.peers.some(function(p){ return p && p.presence && p.presence.pid === pid; });
+}
+
+/* ---------------- друзья ---------------- */
+function addFriend(){
+  var code = (el.frCode.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if(!net.db){ flash("Онлайн недоступен в этом просмотре"); return; }
+  if(code.length < 4){ flash("Введите код друга — 5 знаков"); return; }
+  if(code === me.code){ flash("Это ваш собственный код"); return; }
+  net.db.collection("profiles").where("code", "==", code).limit(1).get().then(function(q){
+    if(q.empty){ flash("Игрок с таким кодом не найден"); return; }
+    var d = q.docs[0].data();
+    if(friends.some(function(f){ return f.id === d.id; })){ flash("Этот друг уже в списке"); return; }
+    friends.push({id:d.id, name:d.name || "Гость", code:d.code});
+    saveFriends();
+    el.frCode.value = "";
+    flash("Друг добавлен: " + (d.name || "Гость"));
+    renderOnline();
+  }, function(){ flash("Не удалось найти игрока"); });
+}
+function dropFriend(id){
+  friends = friends.filter(function(f){ return f.id !== id; });
+  saveFriends(); renderOnline();
+}
+
+/* ---------------- комнаты ---------------- */
+function roomRef(code){ return net.db.doc("rooms/" + code); }
+function chatRef(code){ return net.db.doc("rooms/" + code + "/chat/log"); }
+
+function myName(){
+  var v = (el.meName && el.meName.value || "").trim().slice(0, 14);
+  if(v && v !== me.name){ me.name = v; saveMe(); pubProfile(); }
+  return me.name || "Гость";
+}
+function createRoom(){
+  if(!net.db){ flash("Онлайн недоступен в этом просмотре"); return; }
+  var nick = myName(), code = rcode(5);
+  roomRef(code).get().then(function(s){
+    if(s.exists) code = rcode(5);
+    return roomRef(code).set({
+      code:code, host:me.id, phase:"lobby", modes:clone(setupCfg.modes), pack:packId,
+      seats:[{owner:me.id, name:nick, bot:false}],
+      state:null, version:1, at:Date.now()
+    }).then(function(){
+      enterRoom(code);
+      sysChat(nick + " открыл комнату");
+    });
+  }).catch(function(){ flash("Не удалось создать комнату"); });
+}
+function joinRoom(){
+  if(!net.db){ flash("Онлайн недоступен в этом просмотре"); return; }
+  var code = (el.joinCode && el.joinCode.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if(code.length < 4){ flash("Введите код комнаты"); return; }
+  joinCode(code);
+}
+function joinCode(code){
+  if(!net.db){ flash("Онлайн недоступен в этом просмотре"); return; }
+  var nick = myName();
+  roomRef(code).get().then(function(s){
+    if(!s.exists){ flash("Комната " + code + " не найдена"); return; }
+    var d = s.data(), seats = (d.seats || []).slice(), at = -1;
+    seats.forEach(function(x, i){ if(x.owner === me.id) at = i; });
+    if(at >= 0){ enterRoom(code); return; }
+    if(d.phase !== "lobby"){ flash("Партия в этой комнате уже началась"); return; }
+    if(seats.length >= 8){ flash("В комнате уже восемь игроков"); return; }
+    seats.push({owner:me.id, name:nick, bot:false});
+    roomRef(code).update({seats:seats, version:(d.version || 1) + 1, at:Date.now()}).then(function(){
+      enterRoom(code);
+      sysChat(nick + " вошёл в комнату");
+    }, function(){ flash("Не удалось войти в комнату"); });
+  }, function(){ flash("Не удалось войти в комнату"); });
+}
+function enterRoom(code){
+  net.code = code; net.on = true; net.version = 0;
+  pushPresence();
+  if(net.unsubRoom){ net.unsubRoom(); }
+  net.unsubRoom = roomRef(code).onSnapshot(onRoomDoc, function(){
+    flash("Связь с комнатой прервалась — войдите заново");
+  });
+  if(net.unsubChat){ net.unsubChat(); }
+  net.unsubChat = chatRef(code).onSnapshot(function(s){
+    net.chat = (s.exists && s.data() && s.data().msgs) || [];
+    renderChat();
+  }, function(){});
+  renderOnline();
+}
+function leaveRoom(){
+  var code = net.code, mine = me.id;
+  if(net.unsubRoom){ net.unsubRoom(); net.unsubRoom = null; }
+  if(net.unsubChat){ net.unsubChat(); net.unsubChat = null; }
+  if(net.db && code && net.phase === "lobby"){
+    roomRef(code).get().then(function(s){
+      if(!s.exists) return;
+      var d = s.data(), seats = (d.seats || []).filter(function(x){ return x.owner !== mine; });
+      if(!seats.length || d.host === mine) roomRef(code).delete().catch(function(){});
+      else roomRef(code).update({seats:seats, version:(d.version || 1) + 1}).catch(function(){});
+    }).catch(function(){});
+  }
+  net.on = false; net.code = null; net.seats = []; net.phase = "idle";
+  net.chat = []; net.version = 0; net.isHost = false;
+  stopTimers(); st = null;
+  el.game.hidden = true; el.setup.hidden = false;
+  pushPresence();
+  renderOnline();
+}
+function addBotSeat(){
+  if(!net.isHost || !net.db) return;
+  var seats = net.seats.slice();
+  if(seats.length >= 8){ flash("Больше восьми игроков не поместится"); return; }
+  seats.push({owner:null, name:"Бот " + seats.length, bot:true});
+  roomRef(net.code).update({seats:seats, version:(net.version || 1) + 1}).catch(function(){});
+}
+function dropSeat(ix){
+  if(!net.isHost || !net.db) return;
+  var seats = net.seats.slice();
+  if(seats[ix] && seats[ix].owner === me.id) return;
+  seats.splice(ix, 1);
+  roomRef(net.code).update({seats:seats, version:(net.version || 1) + 1}).catch(function(){});
+}
+function setRoomModes(){
+  if(!net.isHost || !net.db) return;
+  roomRef(net.code).update({modes:clone(setupCfg.modes), version:(net.version || 1) + 1}).catch(function(){});
+}
+function startRoomGame(){
+  if(!net.isHost || !net.db) return;
+  if(net.seats.length < 2){ flash("Нужно минимум двое: позовите друга или добавьте бота"); return; }
+  var seats = net.seats.slice();
+  roomRef(net.code).update({phase:"game", seats:seats, at:Date.now()}).then(function(){
+    newGame(seats);
+    sysChat("Партия началась");
+  }, function(){ flash("Не удалось начать партию"); });
+}
+
+function onRoomDoc(snap){
+  if(!snap.exists){
+    if(net.on){ flash("Комната закрыта хозяином"); leaveRoom(); }
+    return;
+  }
+  var d = snap.data() || {};
+  net.seats = d.seats || [];
+  net.hostId = d.host;
+  net.isHost = (d.host === me.id);
+  net.modes = d.modes || {};
+  net.pack = d.pack || "brands";
+  net.phase = d.phase || "lobby";
+
+  if((net.phase === "game" || net.phase === "over") && d.state){
+    var v = d.version || 0;
+    if(v > net.version || !st){
+      net.version = v;
+      applyRemote(d.state);
+      return;
+    }
+    return;
+  }
+  if(net.phase === "lobby" && st){ stopTimers(); st = null; el.game.hidden = true; el.setup.hidden = false; }
+  renderOnline();
+}
+
+function netPush(){
+  if(!net.on || !net.db || !net.code || !st) return;
+  net.version = (net.version || 0) + 1;
+  try{
+    roomRef(net.code).update({
+      state:snapshot(), version:net.version, phase:(st.over ? "over" : "game"), at:Date.now()
+    }).catch(function(){});
+  }catch(e){}
+}
+function applyRemote(sn){
+  var fresh = !st;
+  if(!hydrate(sn)) return;
+  st.online = true;
+  if(fresh || !boardEl || tileEls.length !== st.board.length){
+    el.setup.hidden = true; el.game.hidden = false;
+    mountBoard();
+  }
+  render();
+  maybeBot();
+}
+
+/* кто чем управляет */
+function isMineSeat(pid){
+  if(!net.on) return true;
+  var p = st && st.players[pid];
+  return !!(p && p.owner && p.owner === me.id);
+}
+function myTurn(){
+  if(!net.on || !st) return true;
+  return isMineSeat(st.turn);
+}
+function canAct(){
+  if(!net.on) return true;
+  if(!st) return false;
+  if(myTurn()) return true;
+  if(st.debt && isMineSeat(st.debt.pid)) return true;
+  if(st.trade && st.trade.phase === "offer" && isMineSeat(st.trade.to)) return true;
+  return false;
+}
+
+/* ---------------- чат ---------------- */
+function sendChat(){
+  var t = (el.chatInput.value || "").trim();
+  if(!t) return;
+  if(!net.db || !net.code){ flash("Чат работает в онлайн-комнате"); return; }
+  el.chatInput.value = "";
+  pushMsg({i:rid(6), pid:me.id, n:me.name || "Гость", t:t.slice(0, 240), at:Date.now()});
+}
+function sysChat(text){
+  if(!net.db || !net.code) return;
+  pushMsg({i:rid(6), pid:"", n:"", t:text, at:Date.now(), sys:1});
+}
+function pushMsg(m){
+  var msgs = net.chat.slice(-59);
+  msgs.push(m);
+  chatRef(net.code).set({msgs:msgs}).catch(function(){ flash("Сообщение не отправилось"); });
+}
+function renderChat(){
+  if(!el.chatPanel) return;
+  el.chatPanel.hidden = !net.on;
+  if(!net.on) return;
+  var here = net.peers.length;
+  el.chatEcho.textContent = "комната " + (net.code || "—") + (here ? " · на связи " + here : "");
+  var host = el.chatList;
+  if(!net.chat.length){
+    host.innerHTML = '<div class="msg sys">Пока тихо. Напишите первым.</div>';
+  } else {
+    host.innerHTML = net.chat.slice(-40).map(function(m){
+      if(m.sys) return '<div class="msg sys">' + escape_(m.t) + '</div>';
+      var mine = m.pid === me.id;
+      return '<div class="msg' + (mine ? " mine" : "") + '">' +
+        (mine ? "" : '<b>' + escape_(m.n || "Гость") + '</b>') + escape_(m.t) + '</div>';
+    }).join("");
+  }
+  host.scrollTop = host.scrollHeight;
+}
+
+/* ---------------- рендер онлайн-экрана ---------------- */
+function renderOnline(){
+  if(!el.onlinePane) return;
+  el.localPane.hidden = (net.tab !== "local");
+  el.onlinePane.hidden = (net.tab !== "online");
+  Array.prototype.forEach.call(el.tabs.children, function(b){
+    b.setAttribute("aria-pressed", b.dataset.t === net.tab ? "true" : "false");
+  });
+  if(net.tab !== "online") return;
+
+  el.netnote.textContent = net.note;
+  el.netnote.className = "netnote" + (net.noteKind ? " " + net.noteKind : "");
+  el.netState.textContent = net.db
+    ? (net.backend === "firestore" ? "firestore" : "связь есть")
+    : (net.ready ? "офлайн" : "…");
+  if(el.meName.value !== me.name) el.meName.value = me.name || "";
+  el.meCode.textContent = me.code;
+
+  // друзья
+  el.frCount.textContent = friends.length ? friends.length + " в списке" : "";
+  if(!friends.length){
+    el.friends.innerHTML = '<div class="empty">Друзей пока нет. Обменяйтесь кодами — и они появятся здесь.</div>';
+  } else {
+    el.friends.innerHTML = "";
+    friends.forEach(function(f){
+      var row = document.createElement("div");
+      row.className = "frow";
+      var on = peerOnline(f.id);
+      row.innerHTML = '<div class="tk' + (on ? " on" : "") + '">' + escape_((f.name || "?").charAt(0).toUpperCase()) + '</div>' +
+        '<div>' + escape_(f.name || "Гость") + (on ? " · онлайн" : "") + '</div>' +
+        '<span class="fc">' + escape_(f.code) + '</span>';
+      var del = document.createElement("button");
+      del.className = "btn tiny"; del.type = "button"; del.textContent = "убрать";
+      del.onclick = function(){ dropFriend(f.id); };
+      row.appendChild(del);
+      el.friends.appendChild(row);
+    });
+  }
+
+  // комната
+  var body = el.roomBody;
+  el.roomEcho.textContent = net.on ? (net.phase === "lobby" ? "лобби" : "партия идёт") : "не подключены";
+  body.innerHTML = "";
+
+  if(!net.db && net.backend === "firestore"){
+    var setup = document.createElement("div");
+    setup.innerHTML =
+      '<p style="margin:0 0 12px;color:var(--ink-2);font-size:13.5px">' +
+      'Онлайн держится на Firestore — базе, куда пишутся комнаты, ходы и чат. ' +
+      'Нужен свой бесплатный проект: ' +
+      '<b>console.firebase.google.com</b> → создать проект → Build → Firestore Database → Create database ' +
+      '(режим test) → Project settings → Your apps → Web → скопировать блок <b>firebaseConfig</b> и вставить сюда.</p>' +
+      '<textarea id="fbCfg" rows="6" placeholder=\'{ "apiKey": "...", "authDomain": "...", "projectId": "...", "appId": "..." }\'></textarea>' +
+      '<div style="display:flex;gap:9px;margin-top:10px;flex-wrap:wrap">' +
+        '<button class="btn pri" id="fbGo" type="button">Подключить</button>' +
+      '</div>' +
+      '<div class="lbl" style="margin-top:10px;text-transform:none;letter-spacing:0;line-height:1.45">' +
+      'Конфиг Firebase не секрет — он и так уходит в браузер, доступ ограничивают правилами. ' +
+      'Правила для игры: разрешить чтение и запись коллекциям <b>profiles</b> и <b>rooms</b>. ' +
+      'Хранится только в этом браузере.</div>';
+    body.appendChild(setup);
+    var ta = setup.querySelector("#fbCfg");
+    setup.querySelector("#fbGo").onclick = function(){ fbConnect(ta.value); };
+    return;
+  }
+
+  if(!net.on){
+    var box = document.createElement("div");
+    box.innerHTML =
+      '<p style="margin:0 0 14px;color:var(--ink-2);font-size:13.5px">' +
+      'Создайте комнату — получите код из пяти знаков. Друг вводит его здесь же и попадает за ваш стол: ' +
+      'ходы, сделки и чат идут по сети, поле строится по числу игроков.</p>' +
+      '<div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">' +
+        '<button class="btn pri" id="mkRoom" type="button">Создать комнату</button>' +
+      '</div>' +
+      '<div class="addrow"><input type="text" id="joinCode" maxlength="8" placeholder="код комнаты" aria-label="Код комнаты">' +
+        '<button class="btn" id="goRoom" type="button">Войти</button></div>';
+    body.appendChild(box);
+    el.joinCode = body.querySelector("#joinCode");
+    body.querySelector("#mkRoom").onclick = createRoom;
+    body.querySelector("#goRoom").onclick = joinRoom;
+    if(friends.length){
+      var inv = document.createElement("div");
+      inv.style.marginTop = "16px";
+      inv.innerHTML = '<span class="lbl">Позвать друга в новую комнату</span>';
+      body.appendChild(inv);
+      friends.forEach(function(f){
+        var b = document.createElement("button");
+        b.className = "btn tiny"; b.type = "button"; b.style.margin = "6px 6px 0 0";
+        b.textContent = "+ " + (f.name || "Гость");
+        b.onclick = function(){
+          createRoom();
+          flash("Комната создана — отправьте " + (f.name || "другу") + " код комнаты");
+        };
+        inv.appendChild(b);
+      });
+    }
+    return;
+  }
+
+  // подключены: лобби
+  var code = document.createElement("div");
+  code.className = "roomcode";
+  code.innerHTML = '<div><span class="lbl">код комнаты</span><b>' + escape_(net.code) + '</b></div>';
+  var cp = document.createElement("button");
+  cp.className = "btn tiny"; cp.type = "button"; cp.textContent = "копировать";
+  cp.onclick = function(){ copyText(net.code); };
+  code.appendChild(cp);
+  body.appendChild(code);
+
+  var seats = document.createElement("div");
+  net.seats.forEach(function(s, i){
+    var row = document.createElement("div");
+    row.className = "seatrow";
+    var on = s.bot || peerOnline(s.owner);
+    row.innerHTML =
+      '<div class="tk" style="background:' + PCOL[i % PCOL.length] + '">' + PTOK[i % PTOK.length] + '</div>' +
+      '<div>' + escape_(s.name || "Игрок") +
+        (s.owner === me.id ? ' <span class="tag">— вы</span>' : "") +
+        (s.bot ? ' <span class="tag">— бот</span>' : (on ? ' <span class="tag">— на связи</span>' : ' <span class="tag">— не в сети</span>')) +
+      '</div>';
+    if(net.isHost && s.owner !== me.id){
+      var x = document.createElement("button");
+      x.className = "btn tiny"; x.type = "button"; x.textContent = "убрать";
+      x.onclick = function(){ dropSeat(i); };
+      row.appendChild(x);
+    } else {
+      row.appendChild(document.createElement("span"));
+    }
+    seats.appendChild(row);
+  });
+  body.appendChild(seats);
+
+  var info = document.createElement("div");
+  info.style.margin = "13px 0";
+  var L = sideLen(Math.max(2, net.seats.length));
+  info.innerHTML = '<span class="lbl">поле на ' + net.seats.length + ' игроков — ' + (4*L + 4) + ' клеток</span>';
+  body.appendChild(info);
+
+  var foot = document.createElement("div");
+  foot.style.display = "flex"; foot.style.gap = "9px"; foot.style.flexWrap = "wrap";
+  if(net.isHost){
+    var addb = document.createElement("button");
+    addb.className = "btn"; addb.type = "button"; addb.textContent = "+ бот";
+    addb.onclick = addBotSeat;
+    foot.appendChild(addb);
+    var startb = document.createElement("button");
+    startb.className = "btn pri"; startb.type = "button"; startb.textContent = "Начать партию";
+    startb.onclick = startRoomGame;
+    foot.appendChild(startb);
+  } else {
+    var w = document.createElement("div");
+    w.className = "hint"; w.style.flex = "1"; w.style.color = "var(--ink-2)"; w.style.fontSize = "13.5px";
+    w.textContent = "Ждём, пока хозяин комнаты начнёт партию.";
+    foot.appendChild(w);
+  }
+  var out = document.createElement("button");
+  out.className = "btn danger"; out.type = "button"; out.textContent = "Выйти";
+  out.onclick = leaveRoom;
+  foot.appendChild(out);
+  body.appendChild(foot);
+}
+function copyText(t){
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){ flash("Скопировано: " + t); },
+                                           function(){ flash("Код: " + t); });
+      return;
+    }
+  }catch(e){}
+  flash("Код: " + t);
+}
+
+/* ======================= boot ======================= */
+ids();
+for(var i=0;i<8;i++){ setupCfg.names[i] = "Игрок " + (i+1); setupCfg.bots[i] = i > 0; }
+loadPacks();
+renderSetup();
+netInit();
+Array.prototype.forEach.call(el.tabs.children, function(b){
+  b.onclick = function(){ net.tab = b.dataset.t; renderOnline(); };
+});
+el.meName.oninput = function(){
+  me.name = (el.meName.value || "").slice(0,14); saveMe(); pubProfile(); pushPresence();
+};
+el.copyCode.onclick = function(){ copyText(me.code); };
+el.frAdd.onclick = addFriend;
+el.frCode.onkeydown = function(e){ if(e.key === "Enter") addFriend(); };
+el.packFiles.onchange = onPackFiles;
+el.packImport.onchange = onPackImport;
+el.packExport.onclick = exportPack;
+el.chatSend.onclick = sendChat;
+el.chatInput.onkeydown = function(e){ if(e.key === "Enter"){ e.preventDefault(); sendChat(); } };
+el.startBtn.onclick = function(){ newGame(); };
+el.resumeBtn.onclick = function(){ if(!loadSave()) alert("Сохранение повреждено — начните новую партию."); };
+document.addEventListener("keydown", function(e){
+  if(!st || st.over || st.busy) return;
+  if(e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.code === "Space"){ e.preventDefault(); if(st.mustRoll) rollDice(); else endTurn(); }
+});
+})();
+</script>
