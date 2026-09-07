@@ -235,7 +235,7 @@ button{font:inherit;color:inherit}
   font-family:"PT Sans Narrow",sans-serif;font-weight:700;text-transform:uppercase;
   font-size:calc(var(--cell)*.15);line-height:1.03;text-align:center;letter-spacing:.005em;
   color:#26332C;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  overflow-wrap:anywhere;hyphens:auto;
+  overflow-wrap:break-word;hyphens:auto;
 }
 .tile .own{position:absolute;inset:0;pointer-events:none;border-radius:2px}
 .tile.owned .own{box-shadow:inset 0 0 0 3px var(--ow)}
@@ -263,9 +263,14 @@ button{font:inherit;color:inherit}
 .tile.special .wm{-webkit-line-clamp:3;color:#3C4B43}
 .tile .art{overflow:hidden}
 .tile .wm{flex:0 0 auto}
+.tile.nm2 .wm{font-size:calc(var(--cell)*.13)}
+.tile.nm3 .wm{font-size:calc(var(--cell)*.113)}
 .tile.longnm .mk{display:none}
-.tile.longnm .wm{-webkit-line-clamp:3;font-size:calc(var(--cell)*.165)}
-.board.compact .tile.longnm .wm{font-size:calc(var(--cell)*.15)}
+.tile.longnm .wm{-webkit-line-clamp:3;font-size:calc(var(--cell)*.155)}
+.board.compact .tile.nm1 .wm{font-size:calc(var(--cell)*.145)}
+.board.compact .tile.nm2 .wm{font-size:calc(var(--cell)*.125)}
+.board.compact .tile.nm3 .wm{font-size:calc(var(--cell)*.108)}
+.board.compact .tile.longnm .wm{font-size:calc(var(--cell)*.14)}
 .board.tiny .tile .strip{font-size:calc(var(--cell)*.19)}
 .board.tiny .tile.prop .wm{font-size:calc(var(--cell)*.22)}
 .board.tiny .tile:not(.prop) .wm{display:none}
@@ -1289,7 +1294,8 @@ function mountBoard(){
     d.className = "tile " + sp.type + (isCorner(sp) ? " corner" : "") +
                   (isSpecial(sp) ? " special" : "") + (side >= 0 ? " s" + side : "");
     d.style.gridArea = pos.r + "/" + pos.c + "/" + (pos.r+1) + "/" + (pos.c+1);
-    if((sp.name || "").length > 12) d.classList.add("longnm");
+    var nlen = (sp.name || "").length;
+    d.classList.add(nlen > 13 ? "longnm" : (nlen > 10 ? "nm3" : (nlen > 7 ? "nm2" : "nm1")));
     d.dataset.i = i;
     d.setAttribute("role", "button"); d.setAttribute("tabindex", "-1");
     d.title = (sp.groupName ? sp.groupName + " · " : "") + sp.name +
